@@ -38,7 +38,16 @@
 
          function selectConversation(conversationId) {
              selectedConversation = conversationId;
+             document.getElementById(conversationId.replace("chat", "")).classList.add('active-conversation');
 
+             //Show which conversation is active
+             Object.keys(document.getElementsByClassName("user-conversation")).forEach((index) => {
+                 document.getElementsByClassName("user-conversation")[index].classList.remove('active-conversation');
+             });
+             document.getElementById(conversationId.replace("chat", "")).classList.add('active-conversation');
+
+
+             //Show or hide conversations
              Object.keys(document.getElementsByClassName("messages-container")).forEach((index) => {
                  if (document.getElementsByClassName("messages-container")[index].classList.contains("invisible")) {
 
