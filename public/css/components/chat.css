@@ -1,0 +1,77 @@
+#conversations-container {
+  display: flex;
+  flex-direction: row;
+  height: 50vh;
+  overflow-x: auto
+}
+
+#locationOrServicerListContainer {
+  display: flex;
+  flex-direction: column;
+  width: 50%;
+}
+
+#chatContainer {
+  display: flex;
+  flex-direction: column;
+  width: 50%;
+}
+
+.locationOrService {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.invisible {
+  display: none !important;
+}
+
+.message {
+  display: flex;
+}
+
+.message>span{
+  background-color: var(--secondary-color);
+  color: var(--branco);
+  padding: 0.4rem;
+  border-radius: 0rem 0.5rem 0.5rem 0.5rem;
+  margin: 0.2rem;
+}
+
+.my-message {
+  flex-direction: row-reverse;
+}
+
+.my-message>span{
+  background-color: var(--principal-color);
+  border-radius: 0.5rem 0rem 0.5rem 0.5rem;
+}
+
+/* Messages screen formation */
+
+#conversations-container{
+overflow: hidden;
+}
+
+#locationOrServicerListContainer{
+  overflow:auto;
+  padding: 1rem;
+}
+
+#chatContainer{
+  overflow: auto;
+  padding: 1rem;
+}
+
+.messages-container{
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  height: 100%;
+}
+
+.input-group-messagesView{
+  margin-top: auto;
+  padding: 1rem;
+}

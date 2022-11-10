@@ -1,0 +1,21 @@
+.start-announce-button,
+.contract-button:hover,
+.panel-button:hover {
+  background-color: var(--branco);
+  color: var(--secondary-color);
+  border-color: var(--branco);
+}
+
+.start-announce-button:hover,
+.contract-button,
+.panel-button {
+  background-color: var(--secondary-color);
+  color: var(--branco);
+  border-color: var(--secondary-color);
+}
+
+.panel-button:disabled {
+  background-color: var(--secondary-color);
+  color: var(--branco);
+  border-color: var(--secondary-color);
+}
