@@ -6,7 +6,7 @@
      use App\Service_pic;
      use App\Location;
      use App\Service;
-     use App\user;
+     use App\User;
      
      $location_pic = new Location_pic();
      $service_pic = new Service_pic();
