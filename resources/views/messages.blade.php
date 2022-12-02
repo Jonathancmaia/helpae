@@ -55,7 +55,9 @@
                          document.getElementsByClassName("messages-container")[index].classList.remove("invisible");
                      }
                  } else {
-                     document.getElementsByClassName("messages-container")[index].classList.add("invisible");
+                     if (document.getElementsByClassName("messages-container")[index].id !== conversationId) {
+                         document.getElementsByClassName("messages-container")[index].classList.add("invisible");
+                     }
                  }
              });
 
@@ -166,6 +168,22 @@
                                              }
                                              userConversationContainer.classList.add(
                                                  "user-conversation");
+
+                                             //If there is a chat selected, add active-conversation class on it
+                                             if (selectedConversation !== null) {
+                                                 let selectedChatId = selectedConversation
+                                                     .replace('chat', '');
+                                                 let chatId = locationOrServiceKey + userKey;
+
+                                                 if (chatId ===
+                                                     selectedChatId) {
+
+                                                     userConversationContainer.classList.add(
+                                                         "active-conversation");
+                                                 }
+
+                                             }
+
                                              locationOrServiceContainerBody.appendChild(
                                                  userConversationContainer);
                                              userConversationContainer.appendChild(
