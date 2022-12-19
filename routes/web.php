@@ -59,6 +59,16 @@ Route::get('/myAnnounces', function(){
     return view('my-announces', ['id' => Auth::user()->id]);
 })->middleware('auth')->name('my-announces');
 Route::post('/getData-user', 'UserController@getData')->name('getData-user');
+Route::get('/show-user/{id}', 'UserController@show')->name('show-user');
+
+//rate user route
+Route::post('/rate-user', 'UserController@rate')->name('rate-user');
+
+//comment user profile route
+Route::post('/post-comment', 'UserController@comment')->name('post-comment');
+
+//add user pic route
+Route::post('/add-pic', 'UserController@addPic')->name('add-pic');
 
 //Non-Auth routes
 Route::get('/home', 'HomeController@index')->name('home');

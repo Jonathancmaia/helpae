@@ -16,10 +16,12 @@ class chatNotificate implements shouldBroadcast
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     private $reciever;
+    private $data;
 
-    public function __construct($reciever)
+    public function __construct($reciever, $data)
     {
         $this->reciever = User::find($reciever);
+        $this->data = Array($data);
     }
 
     /**
@@ -30,5 +32,9 @@ class chatNotificate implements shouldBroadcast
     public function broadcastOn()
     {
         return new PrivateChannel('App.User.'.$this->reciever->id);
+    }
+
+    public function broadcastWith(){
+        return $this->data;
     }
 }

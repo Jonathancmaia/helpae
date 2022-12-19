@@ -102,7 +102,7 @@ class ServiceController extends Controller
     }
 
     public function add_pic(Request $request){
-        return view('edit-service', ['message'=>'ola']);
+        return view('edit-service');
     }
 
     public function store_pic(Request $request){
@@ -120,14 +120,14 @@ class ServiceController extends Controller
 
             $nameFile="{$name}.{$extension}";
 
-            $upload = Image::make($photo)->resize(300, 300)->save(
+            $upload = Image::make($photo)->crop(300)->save(
                 public_path('storage/service-pic/' . $nameFile)
             );
 
             if(!$upload){
                 return redirect()->route('show-service', [
                     (int)$request->service_id,
-                    'error'=>"Falha no upload doarquivo."
+                    'error'=>"Falha no upload do arquivo."
                 ]);
             } else {
                 $service_pic->pic_id = $nameFile;

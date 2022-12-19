@@ -60,7 +60,7 @@ class MessageController extends Controller
         $this->message->type = $request->type;
 
         //Send event new message
-        broadcast(new chatNotificate($request->partner));
+        broadcast(new chatNotificate($request->partner, $this->message));
 
         if($this->message->save()){
             return "true";

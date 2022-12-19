@@ -8,6 +8,12 @@ use App\User;
 use guzzlehttp\guzzle;
 use App\Transaction;
 use Illuminate\Support\Facades\Hash;
+use App\Rate;
+use App\Comment;
+use File;
+
+use Intervention\Image\ImageManagerStatic as Image;
+use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
@@ -20,6 +26,7 @@ class UserController extends Controller
             'email' => Auth::user()->email,
             'rank' => Auth::user()->rank,
             'isVip' => Auth::user()->isVip,
+            'grade' => 0,
         ]);
     }
 
@@ -401,4 +408,213 @@ class UserController extends Controller
         $user = new User;
         return $user::where('id', $request->id)->first(['name', 'email']);
     }
-}
+
+    public function show($id){
+        $user = new User;
+        $user = User::find($id);
+
+        return view ('show-user',[
+            'id' => $user->id,
+            'name' => $user->name,
+            'email' => $user->email,
+            'rank' => $user->rank,
+            'isVip' => $user->isVip,
+            'pic' => $user->pic
+        ]);
+    }
+
+    public function rate(Request $request){
+
+        //A user cannot rate yourself
+        if ($request->to != Auth::user()->id){
+
+            $rate = new Rate;
+            $user = new User;
+            $user = User::find($request->to);
+            $rate_exists = Rate::where('from', Auth::user()->id)->where('to', $request->to)->exists();
+
+            //if user already rated that user, att the grade
+            if($rate_exists){
+                $update = Rate::where('from', Auth::user()->id)->where('to', $request->to)->update(['grade'=>$request->grade]);
+
+                if ($update){
+                    return redirect()->route('show-user', [
+                        'id'=>$request->to,
+                        'success'=> 'Avaliação atualizada com sucesso.'
+                    ]);
+                } else {
+                    return redirect()->route('show-user', [
+                        'id'=>$request->to,
+                        'error'=> 'Erro ao atualizar a avaliação. Entre em contato com o suporte'
+                    ]);
+                }
+            } else {
+                $rate->from = Auth::user()->id;
+                $rate->to = $request->to;
+                $rate->grade = $request->grade;
+
+                if ($rate->save()){
+                    return redirect()->route('show-user', [
+                        'id'=>$request->to,
+                        'success'=> 'Avaliação salva com sucesso.'
+                    ]);
+                } else {
+                    return redirect()->route('show-user', [
+                        'id'=>$request->to,
+                        'error'=> 'Erro ao salvar a avaliação. Entre em contato com o suporte'
+                    ]);
+                }
+            }
+
+        } else {
+            return redirect()->route('show-user', [
+                'id'=>$request->to,
+                'error'=> 'Você não pode avaliar o próprio perfil.'
+            ]);
+        }
+    }
+
+    public function comment(Request $request){
+
+        $comment = new Comment;
+        $user = new User;
+        $user = User::find($request->to);
+        $comment_exists = Comment::where('from', Auth::user()->id)->where('to', $request->to)->exists();
+
+        //A user cannot comment self profile
+        if ($request->to != Auth::user()->id){
+
+            //if user already commented that user, att the comment
+            if($comment_exists){
+
+                $update = Comment::where('from', Auth::user()->id)->where('to', $request->to)->update(['comment'=>$request->comment]);
+
+                if ($update){
+                    return redirect()->route('show-user', [
+                        'id'=>$request->to,
+                        'success'=> 'Comentário alterado com sucesso.'
+                    ]);
+                } else {
+                    return redirect()->route('show-user', [
+                        'id'=>$request->to,
+                        'error'=> 'Falha ao alterar o comentário. Entre em contato com o suporte.'
+                    ]);
+                }
+            } else {
+                $comment->from = Auth::user()->id;
+                $comment->to = $request->to;
+                $comment->comment = $request->comment;
+
+                if ($comment->save()){
+                    return redirect()->route('show-user', [
+                        'id'=>$request->to,
+                        'success'=> 'Comentário salvo com sucesso.'
+                    ]);
+                } else {
+                    return redirect()->route('show-user', [
+                        'id'=>$request->to,
+                        'error'=> 'Erro ao salvar o comentário. Entre em contato com o suporte.'
+                    ]);
+                }
+            }
+        } else {
+            return redirect()->route('show-user', [
+                'id'=>$request->to,
+                'error'=> 'Você não pode comentar no próprio perfil.'
+            ]);
+        }
+    }
+
+    public function deleteComment(Request $request){
+        return redirect()->route('show-user', [
+            'id'=>$request->to,
+            'success'=> 'Comentário apagado com sucesso.'
+        ]);
+    }
+
+    public function addPic(Request $request){
+
+        if($request->hasFile('pic') && $request->file('pic')->isValid()){
+
+            $user = User::find(Auth::user()->id);
+
+            $extension = $request->pic->extension();
+            $photo = $request->file('pic');
+            $name = uniqid(date('His'));
+            $nameFile="{$name}.{$extension}";
+
+            $upload = Image::make($photo)->fit(300)->save(
+                public_path('storage/user-pic/' . $nameFile)
+            );
+
+            if(!$upload){
+
+                return redirect()->route('panel', [
+                    'id' => Auth::user()->id,
+                    'name' => Auth::user()->name,
+                    'email' => Auth::user()->email,
+                    'rank' => Auth::user()->rank,
+                    'isVip' => Auth::user()->isVip,
+                    'grade' => 0,
+                    'error' => "Falha no upload do arquivo."
+                ]);
+            } else {
+
+                if ($user->pic != null){
+                    $delection = File::delete('storage/user-pic/' . $user->pic);
+
+                    if(!$delection){
+
+                        File::delete('storage/user-pic/' . $nameFile);
+                        $user->pic = NULL;
+                        $user->save();
+
+                        return redirect()->route('panel', [
+                            'id' => Auth::user()->id,
+                            'name' => Auth::user()->name,
+                            'email' => Auth::user()->email,
+                            'rank' => Auth::user()->rank,
+                            'isVip' => Auth::user()->isVip,
+                            'grade' => 0,
+                            'error' => "Falha na deleção da foto de perfil atual."
+                        ]);
+                    }
+                }
+
+                $user->pic = $nameFile;
+
+                if($user->save()){
+                    return redirect()->route('panel', [
+                        'id' => Auth::user()->id,
+                        'name' => Auth::user()->name,
+                        'email' => Auth::user()->email,
+                        'rank' => Auth::user()->rank,
+                        'isVip' => Auth::user()->isVip,
+                        'grade' => 0,
+                        'success' => "Foto de perfil enviada com sucesso."
+                    ]);
+                } else {
+                    return redirect()->route('panel', [
+                        'id' => Auth::user()->id,
+                        'name' => Auth::user()->name,
+                        'email' => Auth::user()->email,
+                        'rank' => Auth::user()->rank,
+                        'isVip' => Auth::user()->isVip,
+                        'grade' => 0,
+                        'error' => "Falha no salvamento da foto de perfil."
+                    ]);
+                }
+            }
+        } else {
+            return redirect()->route('panel', [
+                'id' => Auth::user()->id,
+                'name' => Auth::user()->name,
+                'email' => Auth::user()->email,
+                'rank' => Auth::user()->rank,
+                'isVip' => Auth::user()->isVip,
+                'grade' => 0,
+                'error' => "Faça o upload se um arquivo de imagem."
+            ]);
+        }
+        }
+    }

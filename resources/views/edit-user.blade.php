@@ -5,6 +5,35 @@
         <div class="row">
             <div class="col-12 w-background w-100 mt-5 p-5">
 
+                <!-- Add a pic form -->
+                <form class='mb-5' method='post' action='{{ route('add-pic') }}' enctype="multipart/form-data">
+                    @csrf
+                    <h2>
+                        Adicionar ou Alterar foto de perfil
+                    </h2>
+                    <hr />
+                    <div class="d-flex">
+                        <div class="form-group col-8 alig-self-ceter">
+                            <label for="midia">Upload</label>
+                            <input type="file" id="midia" name='pic'>
+                            <p class="help-block">
+                                Envie uma foto para o seu perfil.
+                            </p>
+                            <button type="submit" class="btn panel-button">
+                                Enviar Foto
+                            </button>
+                        </div>
+
+                        <div class="col-4 d-flex justify-content-center">
+                            @if (Auth::user()->pic != null)
+                                <img class="profile-pic" src={{ Storage::url('user-pic/' . Auth::user()->pic) }} />
+                            @else
+                                <img class="profile-pic" src={{ Storage::url('user-pic/default.jpg') }} />
+                            @endif
+                        </div>
+                    </div>
+                </form>
+
                 <!-- Change name form -->
                 <form method='post' action='{{ route('change-name') }}'>
                     @csrf
@@ -14,7 +43,8 @@
                     <hr />
                     <div class="form-group">
                         <label for="name">Nome</label>
-                        <input type="text" class="form-control" id="name" name="name" value='{{ $name }}'>
+                        <input type="text" class="form-control" id="name" name="name"
+                            value='{{ $name }}'>
                     </div>
                     <div class="form-group">
                         <button type='input' class='btn panel-button' id="newNameButton">

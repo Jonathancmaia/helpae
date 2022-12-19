@@ -120,7 +120,7 @@ class LocationController extends Controller
 
             $nameFile="{$name}.{$extension}";
 
-            $upload = Image::make($photo)->resize(300, 300)->save(
+            $upload = Image::make($photo)->crop(300)->save(
                 public_path('storage/location-pic/' . $nameFile)
             );
 

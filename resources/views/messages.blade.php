@@ -213,6 +213,8 @@
                                                      userKey)
                                              }
 
+                                             //TENHO QUE COLOCAR ESSE FORM FODA DO COTAINER DAS MENSAGENS, PARA EU PODER RENDERIZAR AS NOVAS MENSAGENS
+
                                              //Add messages to chat-container
                                              Object.keys(data[locationOrServiceKey][userKey])
                                                  .forEach(
@@ -258,6 +260,7 @@
                                                      });
 
                                              //Creating send messag form
+
                                              let messageForm = document.createElement("div");
                                              messageForm.classList.add('input-group');
                                              messageForm.classList.add('pt-5');
@@ -265,6 +268,7 @@
                                                  'input-group-messagesView');
                                              let messageField = document.createElement(
                                                  "input");
+                                             messageForm.classList.add('order-last');
                                              messageField.classList.add("form-control");
                                              messageField.classList.add("message-field");
                                              messageField.placeholder = "Mesnsagem";
@@ -306,7 +310,42 @@
 
          renderConversation();
 
+         //Render a new message to chat
+         function renderMessage(data, isRecievied) {
+
+             let chatId = null;
+
+             //create message span
+             let messageContainer = document.createElement("div");
+             let message = document.createElement("span");
+             let textMessage = document.createTextNode(data.message);
+
+             messageContainer.classList.add('message');
+
+             messageContainer.appendChild(message);
+             message.appendChild(textMessage);
+
+             //Test if it is a recievied message or a sended message
+             if (isRecievied) {
+                 chatId = "chat" + data.id_locationOrService + data.type + data.id_sender;
+             } else {
+                 chatId = "chat" + data.id_locationOrService + data.type + data.partner;
+                 messageContainer.classList.add('my-message');
+             }
+
+             let chat = document.getElementById(chatId).appendChild(messageContainer);
+
+             scrolls(chatId.replace("chat", "message"));
+         }
+
          async function sendMessage(locationOrServiceKey, userKey) {
+
+             const $request = {
+                 id_locationOrService: locationOrServiceKey.substr(0, locationOrServiceKey.length - 1),
+                 type: locationOrServiceKey.substr(-1),
+                 partner: userKey,
+                 message: document.getElementById("message" + locationOrServiceKey + userKey).value
+             };
 
              const options = {
                  method: "POST",
@@ -314,12 +353,7 @@
                      'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value,
                      'Content-Type': 'application/json'
                  },
-                 body: JSON.stringify({
-                     id_locationOrService: locationOrServiceKey.substr(0, locationOrServiceKey.length - 1),
-                     type: locationOrServiceKey.substr(-1),
-                     partner: userKey,
-                     message: document.getElementById("message" + locationOrServiceKey + userKey).value
-                 })
+                 body: JSON.stringify($request)
              }
 
              const response = await fetch("{{ route('store-message') }}", options)
@@ -327,7 +361,9 @@
                  .then((data) => {
                      if (data) {
                          document.getElementById("message" + locationOrServiceKey + userKey).value = "";
-                         renderConversation();
+
+                         //render sended message to chat
+                         renderMessage($request, false)
                      }
                  })
                  .catch((error) => {
@@ -337,8 +373,10 @@
 
          //new message event listener
          window.Echo.private('App.User.' + {{ Auth::user()->id }}).
-         listen('chatNotificate', (e) => {
-             renderConversation();
+         listen('chatNotificate', (e, data) => {
+
+             //render new message to chat
+             renderMessage(e[0], true)
          });
      </script>
  @endsection

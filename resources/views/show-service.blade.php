@@ -12,7 +12,7 @@
     
     $service_id = $service::find(Request::segment(2));
     
-    $user_offered = $user::where('id', $service::find(Request::segment(2))->first()->user_id)->first();
+    $user_offered = $user::where('id', $service::find(Request::segment(2))->user_id)->first();
     ?>
     <style>
         #conversation-cointainer {
@@ -65,8 +65,10 @@
                 </div>
                 <hr />
                 <div class="p-3">
-                    <h1>{{ $user_offered->name }}</h1>
-                    <small>{{ $user_offered->email }}</small>
+                    <a href={{ route('show-user', $user_offered->id) }}>
+                        <h1>{{ $user_offered->name }}</h1>
+                        <small>{{ $user_offered->email }}</small>
+                    </a>
                 </div>
                 <hr />
                 <div id="conversation-cointainer" class="p-5">

@@ -3,6 +3,7 @@
 @import "components/buttons.css";
 @import "components/footer.css";
 @import "components/card.css";
+@import "components/show-user.css";
 
 /* Chat style */
 :root {
