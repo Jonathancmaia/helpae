@@ -120,7 +120,7 @@ class ServiceController extends Controller
 
             $nameFile="{$name}.{$extension}";
 
-            $upload = Image::make($photo)->crop(300)->save(
+            $upload = Image::make($photo)->fit(300)->save(
                 public_path('storage/service-pic/' . $nameFile)
             );
 

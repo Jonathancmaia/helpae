@@ -59,8 +59,8 @@ class LocationController extends Controller
         }
 
         if ($location->save()){
-            return redirect()->route('edit-location', [
-                'success' => 'Sua mídia foi publicada com sucesso.'
+            return redirect()->route('home', [
+                'success' => 'Seu serviço foi publicado com sucesso.'
             ]);
             exit();
         } else {
@@ -120,7 +120,7 @@ class LocationController extends Controller
 
             $nameFile="{$name}.{$extension}";
 
-            $upload = Image::make($photo)->crop(300)->save(
+            $upload = Image::make($photo)->fit(300)->save(
                 public_path('storage/location-pic/' . $nameFile)
             );
 

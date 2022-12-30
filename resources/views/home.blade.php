@@ -19,7 +19,7 @@
                     <button class="btn btn-outline-secondary" type="submit">
                         <script src="https://cdn.lordicon.com/qjzruarw.js"></script>
                         <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop" delay="2000"
-                            colors="primary:#121331,secondary:#08a88a" style="width:1.8rem;height:1.8rem">
+                            colors="primary:#121331,secondary:#2b58e7" style="width:1.8rem;height:1.8rem">
                         </lord-icon>
                     </button>
                 </div>

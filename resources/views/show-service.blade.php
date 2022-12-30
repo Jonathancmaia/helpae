@@ -25,13 +25,13 @@
         <div class="row justify-content-center">
             <div class="col-12 w-background mt-5">
                 <h1 class="p-5">
-                    Aluge esta ferramenta
+                    Contrate esse serviço
                 </h1>
                 <hr />
                 <div class="d-flex flex-row justify-content-center">
                     <div id="carousel-show" class="carousel slide carousel-show" data-ride="carousel">
                         <div class="carousel-inner">
-                            @if ($service_pic::where('service_id', $service::find(Request::segment(2))->id)->get() !== null)
+                            @if (sizeof($service_pic::where('service_id', $service::find(Request::segment(2))->id)->get()) !== 0)
                                 @foreach ($service_pic::where('service_id', $service::find(Request::segment(2))->id)->get() as $pic)
                                     <div
                                         @if ($loop->first) class="carousel-item active"
@@ -41,9 +41,7 @@
                                     </div>
                                 @endforeach
                             @else
-                                <div
-                                    @if ($loop->first) class="carousel-item active"
-                                  @else class="carousel-item" @endif>
+                                <div class="carousel-item active">
                                     <img class="d-block w-100 rounded" src={{ Storage::url('service-pic/default.jpg') }}
                                         alt="First slide" />
                                 </div>
@@ -100,7 +98,7 @@
                 const response = await fetch("{{ route('show-messages') }}", options)
                     .then((response) => response.json())
                     .then((data) => {
-
+                        
                         //Clear chat-container
                         document.getElementById('conversation-cointainer').innerText = "";
 
@@ -115,7 +113,12 @@
                         chatContainer.appendChild(messagesContainer);
 
                         //Add messages to chat-container
-                        let messages = data[Object.keys(data)[0]][Object.keys(data[Object.keys(data)[0]])[0]];
+                        let messages = "";
+
+                        if(data !== null && data !== undefined){
+                            messages = data[Object.keys(data)[0]][Object.keys(data[Object.keys(data)[0]])[0]];
+                        }
+
                         Object.keys(messages).forEach(messageKey => {
 
                             let messageContainer = document.createElement("div");
@@ -137,7 +140,7 @@
                             messagesContainer.appendChild(messageContainer);
                         });
 
-                        //Creating send messag form
+                        ///Creating send messag form
                         let messageForm = document.createElement("div");
                         messageForm.classList.add("input-group");
                         messageForm.classList.add("mt-5");
@@ -150,7 +153,7 @@
                         messageButton.classList.add("panel-button");
                         messageButton.type = "button";
                         messageButton.onclick = () => {
-                            sendMessage(Object.keys(data)[0], Object.keys(data[Object.keys(data)[0]])[0]);
+                            sendMessage();
                         }
                         messageButton.appendChild(document.createTextNode("enviar"));
 
@@ -168,7 +171,7 @@
 
             renderConversation();
 
-            async function sendMessage(locationOrServiceKey, userKey) {
+            async function sendMessage() {
 
                 const options = {
                     method: "POST",
@@ -177,9 +180,9 @@
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        id_locationOrService: locationOrServiceKey.substr(0, locationOrServiceKey.length - 1),
-                        type: locationOrServiceKey.substr(-1),
-                        partner: userKey,
+                        id_locationOrService: {{ Request::segment(2) }},
+                        type: "s",
+                        partner: {{ $user_offered->id }},
                         message: document.getElementById("message").value
                     })
                 }
@@ -195,6 +198,12 @@
                     .catch((error) => {
                         console.error('Error:', error);
                     });
-            }
+                }
+
+                //new message event listener
+                window.Echo.private('App.User.' + {{ Auth::user()->id }}).
+                listen('chatNotificate', (e) => {
+                renderConversation();
+                });
         </script>
     @endsection

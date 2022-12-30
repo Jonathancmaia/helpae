@@ -32,23 +32,27 @@
                 <div class="d-flex flex-row justify-content-center">
                     <div id="carousel-show" class="carousel slide carousel-show" data-ride="carousel">
                         <div class="carousel-inner">
-                            @if ($location_pic::where('location_id', $location::find(Request::segment(2))->id)->get() !== null)
+                            @if (sizeof($location_pic::where('location_id', $location::find(Request::segment(2))->id)->get()) !== 0)
                                 @foreach ($location_pic::where('location_id', $location::find(Request::segment(2))->id)->get() as $pic)
                                     <div
-                                        @if ($loop->first) class="carousel-item active"
-                        @else
-                            class="carousel-item" @endif>
-                                        <img class="d-block w-100 rounded"
-                                            src={{ Storage::url('location-pic/' . $pic->pic_id) }} alt="First slide">
+                                        @if ($loop->first)
+                                            class="carousel-item active"
+                                        @else
+                                            class="carousel-item"
+                                        @endif
+                                    >
+                                        <img
+                                            class="d-block w-100 rounded"
+                                            src={{ Storage::url('location-pic/' . $pic->pic_id) }} alt="First slide"
+                                        >
                                     </div>
                                 @endforeach
                             @else
-                                <div
-                                    @if ($loop->first) class="carousel-item active"
-                        @else
-                            class="carousel-item" @endif>
-                                    <img class="d-block w-100 rounded"
-                                        src={{ Storage::url('location-pic/default.jpg') }}alt="First slide">
+                                <div class="carousel-item active">
+                                    <img
+                                        class="d-block w-100 rounded"
+                                        src={{ Storage::url('location-pic/default.jpg') }} alt="First slide"
+                                    >
                                 </div>
                             @endif
                         </div>
@@ -118,7 +122,12 @@
                         chatContainer.appendChild(messagesContainer);
 
                         //Add messages to chat-container
-                        let messages = data[Object.keys(data)[0]][Object.keys(data[Object.keys(data)[0]])[0]];
+                        let messages = "";
+
+                        if(data !== null && data !== undefined){
+                            messages = data[Object.keys(data)[0]][Object.keys(data[Object.keys(data)[0]])[0]];
+                        }
+
                         Object.keys(messages).forEach(messageKey => {
 
                             let messageContainer = document.createElement("div");
@@ -153,7 +162,7 @@
                         messageButton.classList.add("panel-button");
                         messageButton.type = "button";
                         messageButton.onclick = () => {
-                            sendMessage(Object.keys(data)[0], Object.keys(data[Object.keys(data)[0]])[0]);
+                            sendMessage();
                         }
                         messageButton.appendChild(document.createTextNode("enviar"));
 
@@ -171,7 +180,7 @@
 
             renderConversation();
 
-            async function sendMessage(locationOrServiceKey, userKey) {
+            async function sendMessage() {
 
                 const options = {
                     method: "POST",
@@ -180,9 +189,9 @@
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        id_locationOrService: locationOrServiceKey.substr(0, locationOrServiceKey.length - 1),
-                        type: locationOrServiceKey.substr(-1),
-                        partner: userKey,
+                        id_locationOrService: {{ Request::segment(2) }},
+                        type: "l",
+                        partner: {{ $user_offered->id }},
                         message: document.getElementById("message").value
                     })
                 }

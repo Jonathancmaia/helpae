@@ -77,231 +77,238 @@
              const response = await fetch("{{ route('show-messages') }}", options)
                  .then((response) => response.json())
                  .then((data) => {
+                    console.log(data)
+                    if (data !== null && data !== undefined){
+                        //Clear chat-container
+                        document.getElementById('conversations-container').innerText = "";
 
-                     //Clear chat-container
-                     document.getElementById('conversations-container').innerText = "";
+                        //Creating location or service list container
+                        let locationOrServicerListContainer = document.createElement("div");
+                        locationOrServicerListContainer.id = "locationOrServicerListContainer";
 
-                     //Creating location or service list container
-                     let locationOrServicerListContainer = document.createElement("div");
-                     locationOrServicerListContainer.id = "locationOrServicerListContainer";
+                        //Creating chat container
+                        let chatContainer = document.createElement("div");
+                        chatContainer.id = "chatContainer";
 
-                     //Creating chat container
-                     let chatContainer = document.createElement("div");
-                     chatContainer.id = "chatContainer";
+                        //Adding divs to document
+                        document.getElementById('conversations-container').appendChild(locationOrServicerListContainer);
+                        document.getElementById('conversations-container').appendChild(chatContainer);
 
-                     //Adding divs to document
-                     document.getElementById('conversations-container').appendChild(locationOrServicerListContainer);
-                     document.getElementById('conversations-container').appendChild(chatContainer);
+                        //Location or services loop
+                        Object.keys(data).forEach(locationOrServiceKey => {
 
-                     //Location or services loop
-                     Object.keys(data).forEach(locationOrServiceKey => {
+                            //Adding location or service to container list
+                            let locationOrServiceContainer = document.createElement("div");
+                            locationOrServiceContainer.classList.add("LocationOrServiceContainer");
+                            locationOrServiceContainer.id = locationOrServiceKey;
 
-                         //Adding location or service to container list
-                         let locationOrServiceContainer = document.createElement("div");
-                         locationOrServiceContainer.classList.add("LocationOrServiceContainer");
-                         locationOrServiceContainer.id = locationOrServiceKey;
+                            let locationOrServiceContainerHeader = document.createElement("div");
+                            locationOrServiceContainerHeader.classList.add("LocationOrServiceHeader");
 
-                         let locationOrServiceContainerHeader = document.createElement("div");
-                         locationOrServiceContainerHeader.classList.add("LocationOrServiceHeader");
+                            let locationOrServiceContainerBody = document.createElement("ul");
+                            locationOrServiceContainerBody.classList.add("LocationOrServiceBody");
 
-                         let locationOrServiceContainerBody = document.createElement("ul");
-                         locationOrServiceContainerBody.classList.add("LocationOrServiceBody");
+                            //Adding divs to document
+                            locationOrServicerListContainer.appendChild(locationOrServiceContainer);
+                            locationOrServiceContainer.appendChild(locationOrServiceContainerHeader);
+                            locationOrServiceContainer.appendChild(locationOrServiceContainerBody);
 
-                         //Adding divs to document
-                         locationOrServicerListContainer.appendChild(locationOrServiceContainer);
-                         locationOrServiceContainer.appendChild(locationOrServiceContainerHeader);
-                         locationOrServiceContainer.appendChild(locationOrServiceContainerBody);
+                            //Print name of service or location on card
+                            fetch(
+                                    locationOrServiceKey.slice(-1) === "l" ?
+                                    "{{ route('desc-location') }}" :
+                                    locationOrServiceKey.slice(-1) === "s" ?
+                                    "{{ route('desc-service') }}" : "Invalid type.", {
+                                        method: "POST",
+                                        headers: {
+                                            'X-CSRF-TOKEN': document.querySelector('input[name="_token"]')
+                                                .value,
+                                            'Content-Type': 'application/json'
+                                        },
+                                        body: JSON.stringify({
+                                            id: locationOrServiceKey.slice(0, locationOrServiceKey
+                                                .length - 1)
+                                        })
+                                    })
+                                .then((response) => response.json())
+                                .then((locationOrServiceData) => {
+                                    locationOrServiceContainerHeader.appendChild(
+                                        document.createTextNode(locationOrServiceData.desc)
+                                    );
 
-                         //Print name of service or location on card
-                         fetch(
-                                 locationOrServiceKey.slice(-1) === "l" ?
-                                 "{{ route('desc-location') }}" :
-                                 locationOrServiceKey.slice(-1) === "s" ?
-                                 "{{ route('desc-service') }}" : "Invalid type.", {
-                                     method: "POST",
-                                     headers: {
-                                         'X-CSRF-TOKEN': document.querySelector('input[name="_token"]')
-                                             .value,
-                                         'Content-Type': 'application/json'
-                                     },
-                                     body: JSON.stringify({
-                                         id: locationOrServiceKey.slice(0, locationOrServiceKey
-                                             .length - 1)
-                                     })
-                                 })
-                             .then((response) => response.json())
-                             .then((locationOrServiceData) => {
-                                 locationOrServiceContainerHeader.appendChild(
-                                     document.createTextNode(locationOrServiceData.desc)
-                                 );
+                                    Object.keys(data[locationOrServiceKey]).forEach(userKey => {
 
-                                 Object.keys(data[locationOrServiceKey]).forEach(userKey => {
+                                        //Print user name and e-mail
+                                        fetch(
+                                                "{{ route('getData-user') }}", {
+                                                    method: "POST",
+                                                    headers: {
+                                                        'X-CSRF-TOKEN': document.querySelector(
+                                                                'input[name="_token"]')
+                                                            .value,
+                                                        'Content-Type': 'application/json'
+                                                    },
+                                                    body: JSON.stringify({
+                                                        id: userKey
+                                                    })
+                                                })
+                                            .then((response) => response.json())
+                                            .then((userData) => {
 
-                                     //Print user name and e-mail
-                                     fetch(
-                                             "{{ route('getData-user') }}", {
-                                                 method: "POST",
-                                                 headers: {
-                                                     'X-CSRF-TOKEN': document.querySelector(
-                                                             'input[name="_token"]')
-                                                         .value,
-                                                     'Content-Type': 'application/json'
-                                                 },
-                                                 body: JSON.stringify({
-                                                     id: userKey
-                                                 })
-                                             })
-                                         .then((response) => response.json())
-                                         .then((userData) => {
+                                                //Add user conversation card to document
+                                                let userConversationContainer = document
+                                                    .createElement(
+                                                        "li");
+                                                userConversationContainer.id =
+                                                    locationOrServiceKey +
+                                                    userKey;
+                                                userConversationContainer.onclick = () => {
+                                                    selectConversation("chat" +
+                                                        locationOrServiceKey +
+                                                        userKey);
+                                                }
+                                                userConversationContainer.classList.add(
+                                                    "user-conversation");
 
-                                             //Add user conversation card to document
-                                             let userConversationContainer = document
-                                                 .createElement(
-                                                     "li");
-                                             userConversationContainer.id =
-                                                 locationOrServiceKey +
-                                                 userKey;
-                                             userConversationContainer.onclick = () => {
-                                                 selectConversation("chat" +
-                                                     locationOrServiceKey +
-                                                     userKey);
-                                             }
-                                             userConversationContainer.classList.add(
-                                                 "user-conversation");
+                                                //If there is a chat selected, add active-conversation class on it
+                                                if (selectedConversation !== null) {
+                                                    let selectedChatId = selectedConversation
+                                                        .replace('chat', '');
+                                                    let chatId = locationOrServiceKey + userKey;
 
-                                             //If there is a chat selected, add active-conversation class on it
-                                             if (selectedConversation !== null) {
-                                                 let selectedChatId = selectedConversation
-                                                     .replace('chat', '');
-                                                 let chatId = locationOrServiceKey + userKey;
+                                                    if (chatId ===
+                                                        selectedChatId) {
 
-                                                 if (chatId ===
-                                                     selectedChatId) {
+                                                        userConversationContainer.classList.add(
+                                                            "active-conversation");
+                                                    }
 
-                                                     userConversationContainer.classList.add(
-                                                         "active-conversation");
-                                                 }
+                                                }
 
-                                             }
+                                                locationOrServiceContainerBody.appendChild(
+                                                    userConversationContainer);
+                                                userConversationContainer.appendChild(
+                                                    document.createTextNode(userData.name +
+                                                        " ➢ " + userData.email)
+                                                );
 
-                                             locationOrServiceContainerBody.appendChild(
-                                                 userConversationContainer);
-                                             userConversationContainer.appendChild(
-                                                 document.createTextNode(userData.name +
-                                                     " ➢ " + userData.email)
-                                             );
+                                                //Add chat to document
+                                                let messagesContainer = document.createElement(
+                                                    "div");
+                                                messagesContainer.classList.add(
+                                                    "messages-container");
+                                                messagesContainer.id = 'chat' +
+                                                    locationOrServiceKey +
+                                                    userKey;
+                                                if (selectedConversation !== messagesContainer
+                                                    .id) {
+                                                    messagesContainer.classList.add(
+                                                        "invisible");
+                                                }
+                                                chatContainer.appendChild(messagesContainer);
 
-                                             //Add chat to document
-                                             let messagesContainer = document.createElement(
-                                                 "div");
-                                             messagesContainer.classList.add(
-                                                 "messages-container");
-                                             messagesContainer.id = 'chat' +
-                                                 locationOrServiceKey +
-                                                 userKey;
-                                             if (selectedConversation !== messagesContainer
-                                                 .id) {
-                                                 messagesContainer.classList.add(
-                                                     "invisible");
-                                             }
-                                             chatContainer.appendChild(messagesContainer);
+                                                //Select first conversation if necessary
+                                                if (selectedConversation === null) {
+                                                    selectConversation("chat" +
+                                                        locationOrServiceKey +
+                                                        userKey)
+                                                }
 
-                                             //Select first conversation if necessary
-                                             if (selectedConversation === null) {
-                                                 selectConversation("chat" +
-                                                     locationOrServiceKey +
-                                                     userKey)
-                                             }
+                                                //TENHO QUE COLOCAR ESSE FORM FODA DO COTAINER DAS MENSAGENS, PARA EU PODER RENDERIZAR AS NOVAS MENSAGENS
 
-                                             //TENHO QUE COLOCAR ESSE FORM FODA DO COTAINER DAS MENSAGENS, PARA EU PODER RENDERIZAR AS NOVAS MENSAGENS
+                                                //Add messages to chat-container
+                                                Object.keys(data[locationOrServiceKey][userKey])
+                                                    .forEach(
+                                                        messageKey => {
 
-                                             //Add messages to chat-container
-                                             Object.keys(data[locationOrServiceKey][userKey])
-                                                 .forEach(
-                                                     messageKey => {
+                                                            let messageContainer = document
+                                                                .createElement(
+                                                                    "div");
+                                                            let messageSpan = document
+                                                                .createElement(
+                                                                    "span");
+                                                            messageContainer.classList.add(
+                                                                "message");
 
-                                                         let messageContainer = document
-                                                             .createElement(
-                                                                 "div");
-                                                         let messageSpan = document
-                                                             .createElement(
-                                                                 "span");
-                                                         messageContainer.classList.add(
-                                                             "message");
+                                                            //add 'my-message' class to user messages
+                                                            if (String(data[
+                                                                        locationOrServiceKey][
+                                                                        userKey
+                                                                    ][
+                                                                        messageKey
+                                                                    ]
+                                                                    .id_sender) === String(
+                                                                    {{ Auth::user()->id }})) {
+                                                                messageContainer.classList.add(
+                                                                    "my-message");
+                                                            }
 
-                                                         //add 'my-message' class to user messages
-                                                         if (String(data[
-                                                                     locationOrServiceKey][
-                                                                     userKey
-                                                                 ][
-                                                                     messageKey
-                                                                 ]
-                                                                 .id_sender) === String(
-                                                                 {{ Auth::user()->id }})) {
-                                                             messageContainer.classList.add(
-                                                                 "my-message");
-                                                         }
+                                                            messageSpan.appendChild(
+                                                                document.createTextNode(
+                                                                    data[
+                                                                        locationOrServiceKey
+                                                                    ][userKey][
+                                                                        messageKey
+                                                                    ]
+                                                                    .message
+                                                                )
+                                                            );
 
-                                                         messageSpan.appendChild(
-                                                             document.createTextNode(
-                                                                 data[
-                                                                     locationOrServiceKey
-                                                                 ][userKey][
-                                                                     messageKey
-                                                                 ]
-                                                                 .message
-                                                             )
-                                                         );
+                                                            messageContainer.appendChild(
+                                                                messageSpan);
+                                                            messagesContainer.appendChild(
+                                                                messageContainer);
+                                                        });
 
-                                                         messageContainer.appendChild(
-                                                             messageSpan);
-                                                         messagesContainer.appendChild(
-                                                             messageContainer);
-                                                     });
+                                                //Creating send messag form
 
-                                             //Creating send messag form
+                                                let messageForm = document.createElement("div");
+                                                messageForm.classList.add('input-group');
+                                                messageForm.classList.add('pt-5');
+                                                messageForm.classList.add(
+                                                    'input-group-messagesView');
+                                                let messageField = document.createElement(
+                                                    "input");
+                                                messageForm.classList.add('order-last');
+                                                messageField.classList.add("form-control");
+                                                messageField.classList.add("message-field");
+                                                messageField.placeholder = "Mesnsagem";
+                                                messageField.id = "message" +
+                                                    locationOrServiceKey +
+                                                    userKey;
+                                                let messageButton = document.createElement(
+                                                    "button");
+                                                messageButton.classList.add("btn");
+                                                messageButton.classList.add("panel-button");
+                                                messageButton.type = "button";
+                                                messageButton.id = "button" +
+                                                    locationOrServiceKey +
+                                                    userKey;
+                                                messageButton.onclick = () => {
+                                                    sendMessage(locationOrServiceKey,
+                                                        userKey);
+                                                }
+                                                messageButton.appendChild(document
+                                                    .createTextNode(
+                                                        "enviar"));
 
-                                             let messageForm = document.createElement("div");
-                                             messageForm.classList.add('input-group');
-                                             messageForm.classList.add('pt-5');
-                                             messageForm.classList.add(
-                                                 'input-group-messagesView');
-                                             let messageField = document.createElement(
-                                                 "input");
-                                             messageForm.classList.add('order-last');
-                                             messageField.classList.add("form-control");
-                                             messageField.classList.add("message-field");
-                                             messageField.placeholder = "Mesnsagem";
-                                             messageField.id = "message" +
-                                                 locationOrServiceKey +
-                                                 userKey;
-                                             let messageButton = document.createElement(
-                                                 "button");
-                                             messageButton.classList.add("btn");
-                                             messageButton.classList.add("panel-button");
-                                             messageButton.type = "button";
-                                             messageButton.id = "button" +
-                                                 locationOrServiceKey +
-                                                 userKey;
-                                             messageButton.onclick = () => {
-                                                 sendMessage(locationOrServiceKey,
-                                                     userKey);
-                                             }
-                                             messageButton.appendChild(document
-                                                 .createTextNode(
-                                                     "enviar"));
+                                                messageForm.appendChild(messageField);
+                                                messageForm.appendChild(messageButton);
 
-                                             messageForm.appendChild(messageField);
-                                             messageForm.appendChild(messageButton);
+                                                //Add send message form
+                                                messagesContainer.appendChild(messageForm);
 
-                                             //Add send message form
-                                             messagesContainer.appendChild(messageForm);
+                                                scrolls(messageField.id);
+                                            });
+                                    });
+                                });
+                        });
+                        
 
-                                             scrolls(messageField.id);
-                                         });
-                                 });
-                             });
-                     });
+
+                    } else {
+                        document.getElementById('conversations-container').innerText = "Você ainda não possui mensagens.";
+                    }
                  })
                  .catch((error) => {
                      console.error('Error:', error);
@@ -359,6 +366,7 @@
              const response = await fetch("{{ route('store-message') }}", options)
                  .then((response) => response.json())
                  .then((data) => {
+                    
                      if (data) {
                          document.getElementById("message" + locationOrServiceKey + userKey).value = "";
 
