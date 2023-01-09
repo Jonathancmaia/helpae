@@ -5,12 +5,20 @@
     use App\Service;
     use App\Service_pic;
     use App\User;
+    use App\Estado;
+    use App\Cidade;
     
     $service = new Service();
     $service_pic = new Service_pic();
     $user = new User();
-    
+    $estado = new Estado();
+    $cidade = new Cidade();
+
+
     $service_id = $service::find(Request::segment(2));
+
+    $cidade = $cidade::find($service_id->cidade);
+    $estado = $estado::find($cidade->id_estado);
     
     $user_offered = $user::where('id', $service::find(Request::segment(2))->user_id)->first();
     ?>
@@ -24,9 +32,12 @@
     <div class="container-fluid">
         <div class="row justify-content-center">
             <div class="col-12 w-background mt-5">
-                <h1 class="p-5">
+                <h1 class="pt-5 pl-5">
                     Contrate esse serviço
                 </h1>
+                <small class="pt-5 pl-5">
+                    Este serviço está sendo oferecido em: {{$cidade->name}} - {{$estado->name}} ({{$estado->uf}})
+                </small>
                 <hr />
                 <div class="d-flex flex-row justify-content-center">
                     <div id="carousel-show" class="carousel slide carousel-show" data-ride="carousel">

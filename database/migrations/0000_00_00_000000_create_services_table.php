@@ -18,6 +18,7 @@ class CreateServicesTable extends Migration
             $table->string('user_id');
             $table->string('desc');
             $table->string('value');
+            $table->integer('cidade');
             $table->timestamps();
         });
     }

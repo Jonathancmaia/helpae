@@ -77,7 +77,7 @@
              const response = await fetch("{{ route('show-messages') }}", options)
                  .then((response) => response.json())
                  .then((data) => {
-                    console.log(data)
+                    
                     if (data !== null && data !== undefined){
                         //Clear chat-container
                         document.getElementById('conversations-container').innerText = "";

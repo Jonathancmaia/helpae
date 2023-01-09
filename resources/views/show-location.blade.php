@@ -9,8 +9,13 @@
     $location = new Location();
     $location_pic = new Location_pic();
     $user = new User();
+    $estado = new Estado();
+    $cidade = new Cidade();
     
     $location_id = $location::find(Request::segment(2));
+
+    $cidade = $cidade::find($location->cidade);
+    $estado = $estado::find($cidade->id_estado);
     
     $user_offered = $user::where('id', $location::find(Request::segment(2))->user_id)->first();
     ?>
@@ -28,6 +33,9 @@
                 <h1 class="p-5">
                     Aluge esta ferramenta
                 </h1>
+                <small class="pt-5 pl-5">
+                    Este produto está sendo oferecido em: {{$cidade->name}} - {{$estado->name}} ({{$estado->uf}})
+                </small>
                 <hr />
                 <div class="d-flex flex-row justify-content-center">
                     <div id="carousel-show" class="carousel slide carousel-show" data-ride="carousel">

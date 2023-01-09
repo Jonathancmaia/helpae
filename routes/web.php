@@ -32,6 +32,7 @@ Route::get('/panel', 'UserController@edit')->middleware('auth')->name('panel');
 Route::post('/change-name', 'UserController@changeName')->middleware('auth')->name('change-name');
 Route::post('/change-email', 'UserController@changeEmail')->middleware('auth')->name('change-email');
 Route::post('/change-password', 'UserController@changePassword')->middleware('auth')->name('change-password');
+Route::post('/change-cnpj', 'UserController@changeCnpj')->middleware('auth')->name('change-cnpj');
 
 //Add pic routes
 Route::post('/add_location_pic', 'LocationController@add_pic')->middleware('auth')->name('add_location_pic');
@@ -60,6 +61,7 @@ Route::get('/myAnnounces', function(){
 })->middleware('auth')->name('my-announces');
 Route::post('/getData-user', 'UserController@getData')->name('getData-user');
 Route::get('/show-user/{id}', 'UserController@show')->name('show-user');
+Route::post('/show-cities', 'CidadeController@show')->name('show-cities');
 
 //rate user route
 Route::post('/rate-user', 'UserController@rate')->name('rate-user');

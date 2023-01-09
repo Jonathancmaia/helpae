@@ -59,6 +59,16 @@ class ServiceController extends Controller
             exit();
         }
 
+        //Verify if city input is valid
+        if(intVal($request->cidade) >= 1 && intVal($request->cidade) <= 5564){
+            $service->cidade = $request->cidade;
+        } else {
+            return view('create-service', [
+                'error' => 'A localização é inválida.'
+            ]);
+            exit();
+        }
+
         if ($service->save()){
             return redirect()->route('home', [
                 'success' => 'Seu serviço foi publicado com sucesso.'

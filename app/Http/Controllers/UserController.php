@@ -26,6 +26,7 @@ class UserController extends Controller
             'email' => Auth::user()->email,
             'rank' => Auth::user()->rank,
             'isVip' => Auth::user()->isVip,
+            'cnpj' => Auth::user()->cnpj,
             'grade' => 0,
         ]);
     }
@@ -270,6 +271,7 @@ class UserController extends Controller
                 'email' => $user->email,
                 'rank' => $user->rank,
                 'isVip' => $user->isVip,
+                'cnpj' => $user->cnpj,
                 'error' => "O nome digitado é igual ao nome já salvo."
             ]);
         } else if (strlen($request->name) < 3 || strlen($request->name) > 60){
@@ -279,6 +281,7 @@ class UserController extends Controller
                 'email' => $user->email,
                 'rank' => $user->rank,
                 'isVip' => $user->isVip,
+                'cnpj' => $user->cnpj,
                 'error' => "O campo 'nome' deve possuir entre 3 e 60 caracteres."
             ]);
         } else {
@@ -291,6 +294,7 @@ class UserController extends Controller
                     'email' => $user->email,
                     'rank' => $user->rank,
                     'isVip' => $user->isVip,
+                    'cnpj' => $user->cnpj,
                     'success' => "Nome alterada com sucesso."
                 ]);
             } else {
@@ -300,6 +304,7 @@ class UserController extends Controller
                     'email' => $user->email,
                     'rank' => $user->rank,
                     'isVip' => $user->isVip,
+                    'cnpj' => $user->cnpj,
                     'error' => "Erro no salvamento da informação. Favor entrar em contato com o suporte."
                 ]);
             }
@@ -317,6 +322,7 @@ class UserController extends Controller
                 'email' => $user->email,
                 'rank' => $user->rank,
                 'isVip' => $user->isVip,
+                'cnpj' => $user->cnpj,
                 'error' => "O e-mail digitado é igual ao e-mail já salvo."
             ]);
         } else if (
@@ -330,6 +336,7 @@ class UserController extends Controller
                 'email' => $user->email,
                 'rank' => $user->rank,
                 'isVip' => $user->isVip,
+                'cnpj' => $user->cnpj,
                 'error' => "O campo 'e-mail' deve possuir entre 5 e 100 caracteres e deve ser um e-mail válido."
             ]);
         } else {
@@ -342,6 +349,7 @@ class UserController extends Controller
                     'email' => $user->email,
                     'rank' => $user->rank,
                     'isVip' => $user->isVip,
+                    'cnpj' => $user->cnpj,
                     'success' => "Email alterado com sucesso."
                 ]);
             } else {
@@ -351,6 +359,7 @@ class UserController extends Controller
                     'email' => $user->email,
                     'rank' => $user->rank,
                     'isVip' => $user->isVip,
+                    'cnpj' => $user->cnpj,
                     'error' => "Erro no salvamento da informação. Favor entrar em contato com o suporte."
                 ]);
             }
@@ -367,6 +376,7 @@ class UserController extends Controller
                 'email' => $user->email,
                 'rank' => $user->rank,
                 'isVip' => $user->isVip,
+                'cnpj' => $user->cnpj,
                 'error' => "A senha atual está incorreta"
             ]);
         } else if (strlen($request->newPassword) < 8 || strlen($request->newPassword) > 32){
@@ -376,6 +386,7 @@ class UserController extends Controller
                 'email' => $user->email,
                 'rank' => $user->rank,
                 'isVip' => $user->isVip,
+                'cnpj' => $user->cnpj,
                 'error' => $request->newPassword
             ]);
         } else {
@@ -398,9 +409,53 @@ class UserController extends Controller
                     'email' => $user->email,
                     'rank' => $user->rank,
                     'isVip' => $user->isVip,
+                    'cnpj' => $user->cnpj,
                     'error' => "Erro no salvamento da informação. Favor entrar em contato com o suporte."
                 ]);
             }
+        }
+    }
+
+    public function changeCnpj(Request $request){
+
+        $user = User::find(Auth::user()->id);
+
+        $request->cnpj =  preg_replace("/[^0-9]/", "", $request->cnpj);
+
+        if(strlen((string) $request->cnpj) == 14){
+            $user->cnpj = $request->cnpj;
+            
+            if ($user->save()){
+                return view ('edit-user', [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'rank' => $user->rank,
+                    'isVip' => $user->isVip,
+                    'cnpj' => $user->cnpj,
+                    'success' => "Cnpj trocado com sucesso."
+                ]);
+            } else {
+                return view ('edit-user', [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'rank' => $user->rank,
+                    'isVip' => $user->isVip,
+                    'cnpj' => $user->cnpj,
+                    'error' => "Erro no salvamento da informação. Favor entrar em contato com o suporte."
+                ]);
+            }
+        } else {
+            return view ('edit-user', [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'rank' => $user->rank,
+                'isVip' => $user->isVip,
+                'cnpj' => $user->cnpj,
+                'error' => "O cnpj digitado é inválido."
+            ]);
         }
     }
 
@@ -555,6 +610,7 @@ class UserController extends Controller
                     'email' => Auth::user()->email,
                     'rank' => Auth::user()->rank,
                     'isVip' => Auth::user()->isVip,
+                    'cnpj' => Auth::user()->cnpj,
                     'grade' => 0,
                     'error' => "Falha no upload do arquivo."
                 ]);
@@ -575,6 +631,7 @@ class UserController extends Controller
                             'email' => Auth::user()->email,
                             'rank' => Auth::user()->rank,
                             'isVip' => Auth::user()->isVip,
+                            'cnpj' => Auth::user()->cnpj,
                             'grade' => 0,
                             'error' => "Falha na deleção da foto de perfil atual."
                         ]);
@@ -590,6 +647,7 @@ class UserController extends Controller
                         'email' => Auth::user()->email,
                         'rank' => Auth::user()->rank,
                         'isVip' => Auth::user()->isVip,
+                        'cnpj' => Auth::user()->cnpj,
                         'grade' => 0,
                         'success' => "Foto de perfil enviada com sucesso."
                     ]);
@@ -600,6 +658,7 @@ class UserController extends Controller
                         'email' => Auth::user()->email,
                         'rank' => Auth::user()->rank,
                         'isVip' => Auth::user()->isVip,
+                        'cnpj' => Auth::user()->cnpj,
                         'grade' => 0,
                         'error' => "Falha no salvamento da foto de perfil."
                     ]);
@@ -612,6 +671,7 @@ class UserController extends Controller
                 'email' => Auth::user()->email,
                 'rank' => Auth::user()->rank,
                 'isVip' => Auth::user()->isVip,
+                'cnpj' => Auth::user()->cnpj,
                 'grade' => 0,
                 'error' => "Faça o upload se um arquivo de imagem."
             ]);

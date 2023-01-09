@@ -21,7 +21,14 @@ class LocationController extends Controller
 
     public function create()
     {
-        return view('create-location');
+        if (Auth::user()->cnpj === NULL){
+            return view('home', [
+                'error' => 'Você só pode anúnciar um produto para aluguel caso possua um cnpj. Você pode adicionar o seu cnpj no pianel.'
+            ]);
+            exit();
+        } else {
+            return view('create-location');
+        }
     }
 
     public function store(Request $request)
@@ -54,6 +61,16 @@ class LocationController extends Controller
         } else {
             return view('create-location', [
                 'error' => 'Digite um valor no campo de reais entre 10 e 99999.'
+            ]);
+            exit();
+        }
+
+        //Verify if city input is valid
+        if(intVal($request->cidade) >= 1 && intVal($request->cidade) <= 5564){
+            $location->cidade = $request->cidade;
+        } else {
+            return view('create-location', [
+                'error' => 'A localização é inválida.'
             ]);
             exit();
         }

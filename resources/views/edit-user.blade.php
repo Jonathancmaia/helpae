@@ -47,7 +47,7 @@
                             value='{{ $name }}'>
                     </div>
                     <div class="form-group">
-                        <button type='input' class='btn panel-button' id="newNameButton">
+                        <button type='input' class='btn panel-button'>
                             Mudar Nome
                         </button>
                     </div>
@@ -68,7 +68,7 @@
                             Seu e-mail será compartilhado para outros usuários como forma de contato.
                         </small>
                         <div class="form-group">
-                            <button type='input' class='btn panel-button' id="newEmailButton">
+                            <button type='input' class='btn panel-button'>
                                 Mudar E-mail
                             </button>
                         </div>
@@ -95,6 +95,25 @@
                         </a>
                     @endif
                 </div>
+
+                <!-- Add/change CNPJ form -->
+                <form class="mt-5" method="post" action='{{ route('change-cnpj') }}'>
+                    @csrf
+                    <h2>
+                        Adicione ou altere o seu CNPJ
+                    </h2>
+                    <hr/>
+                    <div class="form-group">
+                        <label for="cnpj">CNPJ (Digite apenas números)</label>
+                        <input type="text" class="form-control" id="cnpj" name="cnpj"
+                            value='{{ $cnpj }}' placeholder="00.000.000/0000-00" onkeyup="cnpjMask()" maxlength="18">
+                    </div>
+                    <div class="form-group">
+                        <button type='input' class='btn panel-button'>
+                            Mudar CNPJ
+                        </button>
+                    </div>
+                </form>
 
                 <!-- Change password form -->
                 <form class='mt-5' method='post' action='{{ route('change-password') }}'>
@@ -155,5 +174,19 @@
                 }
             }
         }
+
+        function cnpjMask(){
+
+            let val = document.getElementById('cnpj').value.replace(/\D/g, "");
+
+            val = val.replace(/^(\d{2})(\d)/, "$1.$2");
+            val = val.replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3");
+            val = val.replace(/\.(\d{3})(\d)/, ".$1/$2");
+            val = val.replace(/(\d{4})(\d)/, "$1-$2");
+
+            document.getElementById('cnpj').value = val;
+        }
+
+        cnpjMask();
     </script>
 @endsection

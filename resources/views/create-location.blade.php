@@ -1,6 +1,10 @@
 @extends('layouts.app')
 
 @section('content')
+<?php
+ use App\Estado;
+ $estados = new Estado;
+?>
     <div class="container-fluid w-background mt-5 p-5" onLoad="descriptionValidator()">
         <div class="row justify-content-center">
             <div class="col-12">
@@ -32,7 +36,7 @@
                     <!-- Value input -->
                     <div class="input-group mt-5">
                         <div class="input-group-prepend">
-                            <span class="input-group-text" id="">Valor da diária do seu produto ( R$ )</span>
+                            <span class="input-group-text">Valor da diária do seu produto ( R$ )</span>
                         </div>
                         <input type="number" class="form-control" placeholder="10" name="valueR" oninput="realValidator()"
                             id="valueR">
@@ -41,6 +45,23 @@
                         </div>
                         <input type="number" class="form-control" name="valueC" id="valueC" placeholder="00"
                             oninput="centavosValidator()">
+                    </div>
+
+                    <!-- Where is input -->
+                    <div class="input-group mt-5">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">Estado</span>
+                        </div>
+                        <select class="form-select form-control" aria-label="estado" id="estado" name="estado" onchange="attCities()">
+                            @foreach ($estados::all() as $estado)
+                                <option value={{$estado->id}}>{{$estado->name}}</option>
+                            @endforeach
+                        </select>
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">Cidade</span>
+                        </div>
+                        <select class="form-select form-control" aria-label="estado" name="cidade" id="cidade" disabled>
+                        </select>
                     </div>
 
                     <!-- Submit input -->
@@ -79,5 +100,47 @@
                 centavosField.value = centavosField.value.slice(0, 2);
             }
         }
+
+        //Function that att cities based on UF values
+        function attCities(){
+            async function renderCities() {
+                const options = {
+                    method: "POST",
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        uf_id: document.getElementById('estado').value
+                    })
+                }
+
+
+
+                let citiesList = document.getElementById('cidade');
+                citiesList.innerHTML = "";
+                citiesList.disabled = true;
+
+                const response = await fetch("{{ route('show-cities') }}", options)
+                 .then((response) => response.json())
+                 .then((data) => {
+                    
+                    data.forEach(city =>{
+                        let cityOption =  document.createElement("option");
+                        cityOption.value = city.id;
+
+                        const cityName = document.createTextNode(city.name);
+
+                        cityOption.appendChild(cityName);
+                        citiesList.appendChild(cityOption);
+                        citiesList.disabled = false;
+                    })
+                 });
+            }
+
+            renderCities();
+        }
+
+        attCities();
     </script>
 @endsection

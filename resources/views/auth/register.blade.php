@@ -12,7 +12,7 @@
                 </h2>
                 <hr/>
                 <div class="form-group row mt-5">
-                    <label for="id" class="col-md-4 col-form-label text-md-right">Cpf ou Cnpj</label>
+                    <label for="id" class="col-md-4 col-form-label text-md-right">Cpf</label>
 
                     <div class="col-md-6">
                         <input id="id" type="number" class="form-control @error('id') is-invalid @enderror" name="id" required autofocus>
@@ -26,7 +26,7 @@
                 </div>
 
                 <div class="form-group row">
-                    <label for="name" class="col-md-4 col-form-label text-md-right">{{ __('Name') }}</label>
+                    <label for="name" class="col-md-4 col-form-label text-md-right">{{ __('Nome') }}</label>
 
                     <div class="col-md-6">
                         <input id="name" type="text" class="form-control @error('name') is-invalid @enderror" name="name" value="{{ old('name') }}" required autocomplete="name" autofocus>

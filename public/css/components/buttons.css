@@ -19,3 +19,7 @@
   color: var(--branco);
   border-color: var(--secondary-color);
 }
+
+.search_text, .search_button{
+  height: calc(1.5em + 1rem + 2px) !important;
+}
