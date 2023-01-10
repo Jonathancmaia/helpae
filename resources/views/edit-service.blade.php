@@ -60,6 +60,18 @@
                             Enviar mídia
                         </button>
                     </form>
+                    <hr/>
+                    <form method="post" action="{{ route('delete-service') }}">
+                        @csrf
+                        <div class="form-group">
+                            <h2>Deletar esta publicação.</h2>
+                            <label>Tenha certeza ao realizar esta ação. Todas as mídias serão apagadas.</label>
+                            <input type="hidden" value={{Request::segment(2)}} name="id"/>
+                        </div>
+                        <button type="submit" class="btn btn-danger btn-lg btn-block">
+                            Deletar
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>

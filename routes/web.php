@@ -46,6 +46,10 @@ Route::post('/store_service_pic', 'ServiceController@store_pic')->middleware('au
 Route::post('/delete_location_pic', 'LocationController@delete_pic')->middleware('auth')->name('delete_location_pic');
 Route::post('/delete_service_pic', 'ServiceController@delete_pic')->middleware('auth')->name('delete_service_pic');
 
+//Delete publication routes
+Route::post('/delete-service', 'ServiceController@delete')->middleware('auth')->name('delete-service');
+Route::post('/delete-location', 'LocationController@delete')->middleware('auth')->name('delete-location');
+
 //Message routes
 Route::post('/store_message', 'MessageController@store')->middleware('auth')->name('store-message');
 Route::get('/messages', 'MessageController@index')->name('messages');

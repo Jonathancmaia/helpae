@@ -96,19 +96,39 @@ class ServiceController extends Controller
         }
     }
 
-    public function edit($id)
-    {
-        //
-    }
 
-    public function update(Request $request, $id)
+    public function delete(Request $request)
     {
-        //
-    }
+        $service = new Service;
+        $service = $service::find($request->id);
+        $service_pics = new Service_pic;
+        $service_pics = $service_pics->where('service_id', $request->id)->get();
 
-    public function destroy($id)
-    {
-        //
+        if (intval(Auth::user()->id) === intval($service->user_id)){
+
+            foreach($service_pics as $service_pic){
+                if(Storage::disk('public')->exists('service-pic/'.$service_pic->pic_id)){
+
+                    Storage::disk('public')->delete('service-pic/'.$service_pic->pic_id);
+    
+                    $service_pic::where('pic_id',$service_pic->pic_id)->delete();
+                }
+            }
+
+            if($service::where('id',$request->id)->delete()){
+                return redirect()->route('home', [
+                    'success'=> 'Sua publicação foi apagada com sucesso.',
+                ]);
+            }
+
+        } else {
+            return redirect()->route('show-service', [
+                'id'=>$request->id,
+                'error'=> 'Você não é o dono desta publicação.',
+                'data' => $service
+            ]);
+        }
+        
     }
 
     public function add_pic(Request $request){

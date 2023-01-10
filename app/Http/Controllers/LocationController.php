@@ -102,19 +102,38 @@ class LocationController extends Controller
         }
     }
 
-    public function edit($id)
+    public function delete(Request $request)
     {
-        //
-    }
+        $location = new Location;
+        $location = $location::find($request->id);
+        $location_pics = new Location_pic;
+        $location_pics = $location_pics->where('location_id', $request->id)->get();
 
-    public function update(Request $request, $id)
-    {
-        //
-    }
+        if (intval(Auth::user()->id) === intval($location->user_id)){
 
-    public function destroy($id)
-    {
-        //
+            foreach($location_pics as $location_pic){
+                if(Storage::disk('public')->exists('location-pic/'.$location_pic->pic_id)){
+
+                    Storage::disk('public')->delete('location-pic/'.$location_pic->pic_id);
+    
+                    $location_pic::where('pic_id',$location_pic->pic_id)->delete();
+                }
+            }
+
+            if($location::where('id',$request->id)->delete()){
+                return redirect()->route('home', [
+                    'success'=> 'Sua publicação foi apagada com sucesso.',
+                ]);
+            }
+
+        } else {
+            return redirect()->route('show-location', [
+                'id'=>$request->id,
+                'error'=> 'Você não é o dono desta publicação.',
+                'data' => $location
+            ]);
+        }
+        
     }
 
     public function add_pic(Request $request){
