@@ -129,7 +129,7 @@ class UserController extends Controller
             $curl = curl_init();
 
             curl_setopt_array($curl, [
-                    CURLOPT_URL => 'https://ws.pagseguro.uol.com.br/v3/transactions/notifications/'.$request->notificationCode.'?email=helpaecomercial@gmail.com&token=09E866B44E7A4808B57B6F71AAB11D38',
+                    CURLOPT_URL => 'https://ws.sandbox.pagseguro.uol.com.br/v3/transactions/notifications/'.$request->notificationCode.'?email=helpaecomercial@gmail.com&token=09E866B44E7A4808B57B6F71AAB11D38',
                     CURLOPT_RETURNTRANSFER => true,
                     CURLOPT_ENCODING => "",
                     CURLOPT_MAXREDIRS => 10,
@@ -140,8 +140,9 @@ class UserController extends Controller
                       "Content-Type: application/xml; charset=ISO-8859-1"
             ],]);
 
-            $response = simplexml_load_file(curl_exec($curl));
-            $err = curl_error($curl);
+	    $xml = curl_exec($curl);
+	    $response = simplexml_load_string($xml);
+	    $err = curl_error($curl);
             curl_close($curl);
 
             $transaction = new Transaction;
@@ -160,14 +161,14 @@ class UserController extends Controller
 
             if (Transaction::find($response->code) !== null){
                 $transacion = Transaction::find($response->code);
-                $transacion->status = $response->transaction->status;
+                $transacion->status = $response->status;
 
                 //Se o retorno for "aprovado" adiciona os dias de vip, caso seja "cancelado" ou "devolvido" remove os dias de vip.
-                $user = User::find(Auth::user()->id);
+                $user = User::find($response->sender->documents->document->value);
 
-                if ($response->transaction->status === '3'){
+                if ($response->status === '3'){
 
-                    switch ($response->transaction->items->item->id){
+                    switch ($response->items->item->id){
                         case 1:
                             $user->isVip = $user->isVip+31;
                             break;
@@ -184,9 +185,9 @@ class UserController extends Controller
                         
                     $user->save();
                 }else if (
-                    $response->transaction->status === '6' || $response->transaction->status === '7'
+                    $response->status === '6' || $response->status === '7'
                 ){
-                    switch ($response->transaction->items->item->id){
+                    switch ($response->items->item->id){
                         case 1:
                             $user->isVip = $user->isVip-31;
                             break;
@@ -206,14 +207,14 @@ class UserController extends Controller
 
                 $transaction->save();
             } else {
-                $transaction->id = $response->transaction->code;
-                $transaction->status = $response->transaction->status;
+                $transaction->id = $response->code;
+                $transaction->status = $response->status;
 
                 //Se o retorno for "aprovado" adiciona os dias de vip, caso seja "cancelado" ou "devolvido" remove os dias de vip.
-                if ($response->transaction->status === '3'){
+                if ($response->status === '3'){
                     $user = User::find(Auth::user()->id);
 
-                    switch ($response->transaction->items->item->id){
+                    switch ($response->items->item->id){
                         case 1:
                             $user->isVip = $user->isVip+31;
                             break;
@@ -228,9 +229,9 @@ class UserController extends Controller
                             break;
                     }
                 } else if (
-                    $response->transaction->status === '6' || $response->transaction->status === '7'
+                    $response->status === '6' || $response->status === '7'
                 ){
-                    switch ($response->transaction->items->item->id){
+                    switch ($response->items->item->id){
                         case 1:
                             $user->isVip = $user->isVip-31;
                             break;
@@ -247,8 +248,9 @@ class UserController extends Controller
                         
                     $user->save();
                 }
-
-                $transaction->user_id = Auth::user()->id;
+                
+		        $transaction->user_id = $response->sender->documents->document->value;
+		
                 $transaction->save();
             }
         }
