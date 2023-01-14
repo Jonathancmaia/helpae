@@ -124,12 +124,11 @@ class UserController extends Controller
     }
 
     public function paymentReturn(Request $request){
-        if($request->getHttpHost() === 'pagseguro.uol.com.br'){
 
-            if($request->notificationType === 'transaction'){
-                $curl = curl_init();
+        if($request->notificationType === 'transaction'){
+            $curl = curl_init();
 
-                curl_setopt_array($curl, [
+            curl_setopt_array($curl, [
                     CURLOPT_URL => 'https://ws.pagseguro.uol.com.br/v3/transactions/notifications/'.$request->notificationCode.'?email=helpaecomercial@gmail.com&token=09E866B44E7A4808B57B6F71AAB11D38',
                     CURLOPT_RETURNTRANSFER => true,
                     CURLOPT_ENCODING => "",
@@ -139,125 +138,121 @@ class UserController extends Controller
                     CURLOPT_CUSTOMREQUEST => "GET",
                     CURLOPT_HTTPHEADER => [
                       "Content-Type: application/xml; charset=ISO-8859-1"
-                ],]);
+            ],]);
 
-                $response = simplexml_load_file(curl_exec($curl));
-                $err = curl_error($curl);
-                curl_close($curl);
+            $response = simplexml_load_file(curl_exec($curl));
+            $err = curl_error($curl);
+            curl_close($curl);
 
-                $transaction = new Transaction;
+            $transaction = new Transaction;
 
-                /* legenda do status da compra do mercado livre
-                    1 - Aguardando pagamento
-                    2 - Em análise
-                    3 - Paga
-                    4 - Disponível
-                    5 - Em disputa
-                    6 - Devolvida
-                    7 - Cancelada
-                    8 - Debitado
-                    9 - Retenção temporária
-                */
+            /* legenda do status da compra do mercado livre
+                1 - Aguardando pagamento
+                2 - Em análise
+                3 - Paga
+                4 - Disponível
+                5 - Em disputa
+                6 - Devolvida
+                7 - Cancelada
+                8 - Debitado
+                9 - Retenção temporária
+            */
 
-                if (Transaction::find($response->code) !== null){
-                    $transacion = Transaction::find($response->code);
-                    $transacion->status = $response->transaction->status;
+            if (Transaction::find($response->code) !== null){
+                $transacion = Transaction::find($response->code);
+                $transacion->status = $response->transaction->status;
 
-                    //Se o retorno for "aprovado" adiciona os dias de vip, caso seja "cancelado" ou "devolvido" remove os dias de vip.
+                //Se o retorno for "aprovado" adiciona os dias de vip, caso seja "cancelado" ou "devolvido" remove os dias de vip.
+                $user = User::find(Auth::user()->id);
+
+                if ($response->transaction->status === '3'){
+
+                    switch ($response->transaction->items->item->id){
+                        case 1:
+                            $user->isVip = $user->isVip+31;
+                            break;
+                        case 2:
+                            $user->isVip = $user->isVip+184;
+                            break;
+                        case 3:
+                            $user->isVip = $user->isVip+366;
+                            break;
+                        default:
+                            exit();
+                            break;
+                        }
+                        
+                    $user->save();
+                }else if (
+                    $response->transaction->status === '6' || $response->transaction->status === '7'
+                ){
+                    switch ($response->transaction->items->item->id){
+                        case 1:
+                            $user->isVip = $user->isVip-31;
+                            break;
+                        case 2:
+                            $user->isVip = $user->isVip-184;
+                            break;
+                        case 3:
+                            $user->isVip = $user->isVip-366;
+                            break;
+                        default:
+                            exit();
+                            break;
+                    }
+                        
+                    $user->save();
+                }
+
+                $transaction->save();
+            } else {
+                $transaction->id = $response->transaction->code;
+                $transaction->status = $response->transaction->status;
+
+                //Se o retorno for "aprovado" adiciona os dias de vip, caso seja "cancelado" ou "devolvido" remove os dias de vip.
+                if ($response->transaction->status === '3'){
                     $user = User::find(Auth::user()->id);
 
-                    if ($response->transaction->status === '3'){
-
-                        switch ($response->transaction->items->item->id){
-                            case 1:
-                                $user->isVip = $user->isVip+31;
-                                break;
-                            case 2:
-                                $user->isVip = $user->isVip+184;
-                                break;
-                            case 3:
-                                $user->isVip = $user->isVip+366;
-                                break;
-                            default:
-                                exit();
-                                break;
-                        }
-                        
-                        $user->save();
-                    }else if (
-                        $response->transaction->status === '6' || $response->transaction->status === '7'
-                    ){
-                        switch ($response->transaction->items->item->id){
-                            case 1:
-                                $user->isVip = $user->isVip-31;
-                                break;
-                            case 2:
-                                $user->isVip = $user->isVip-184;
-                                break;
-                            case 3:
-                                $user->isVip = $user->isVip-366;
-                                break;
-                            default:
-                                exit();
-                                break;
-                        }
-                        
-                        $user->save();
+                    switch ($response->transaction->items->item->id){
+                        case 1:
+                            $user->isVip = $user->isVip+31;
+                            break;
+                        case 2:
+                            $user->isVip = $user->isVip+184;
+                            break;
+                        case 3:
+                            $user->isVip = $user->isVip+366;
+                            break;
+                        default:
+                            exit();
+                            break;
                     }
-
-                    $transaction->save();
-                } else {
-                    $transaction->id = $response->transaction->code;
-                    $transaction->status = $response->transaction->status;
-
-                    //Se o retorno for "aprovado" adiciona os dias de vip, caso seja "cancelado" ou "devolvido" remove os dias de vip.
-                    if ($response->transaction->status === '3'){
-                        $user = User::find(Auth::user()->id);
-
-                        switch ($response->transaction->items->item->id){
-                            case 1:
-                                $user->isVip = $user->isVip+31;
-                                break;
-                            case 2:
-                                $user->isVip = $user->isVip+184;
-                                break;
-                            case 3:
-                                $user->isVip = $user->isVip+366;
-                                break;
-                            default:
-                                exit();
-                                break;
-                        }
-                    } else if (
-                        $response->transaction->status === '6' || $response->transaction->status === '7'
-                    ){
-                        switch ($response->transaction->items->item->id){
-                            case 1:
-                                $user->isVip = $user->isVip-31;
-                                break;
-                            case 2:
-                                $user->isVip = $user->isVip-184;
-                                break;
-                            case 3:
-                                $user->isVip = $user->isVip-366;
-                                break;
-                            default:
-                                exit();
-                                break;
-                        }
-                        
-                        $user->save();
+                } else if (
+                    $response->transaction->status === '6' || $response->transaction->status === '7'
+                ){
+                    switch ($response->transaction->items->item->id){
+                        case 1:
+                            $user->isVip = $user->isVip-31;
+                            break;
+                        case 2:
+                            $user->isVip = $user->isVip-184;
+                            break;
+                        case 3:
+                            $user->isVip = $user->isVip-366;
+                            break;
+                        default:
+                            exit();
+                            break;
                     }
-
-                    $transaction->user_id = Auth::user()->id;
-                    $transaction->save();
+                        
+                    $user->save();
                 }
-            }
 
-            return response(200);
-        } else {
-            return response('Not authorized host.',500);
+                $transaction->user_id = Auth::user()->id;
+                $transaction->save();
+            }
         }
+        return response(200);
     }
 
     public function changeName(Request $request){
