@@ -91,6 +91,3 @@ Route::post('/turnVip', 'UserController@turnVip')->middleware('auth')->name('tur
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
-
-//Payment status change
-Route::post('/paymentReturn', 'UserController@paymentReturn');
