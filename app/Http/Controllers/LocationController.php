@@ -21,14 +21,7 @@ class LocationController extends Controller
 
     public function create()
     {
-        if (Auth::user()->cnpj === NULL){
-            return view('home', [
-                'error' => 'Você só pode anúnciar um produto para aluguel caso possua um cnpj. Você pode adicionar o seu cnpj no pianel.'
-            ]);
-            exit();
-        } else {
-            return view('create-location');
-        }
+        return view('create-location');
     }
 
     public function store(Request $request)

@@ -41,28 +41,16 @@ class UserController extends Controller
         $option = array();
         switch($request->vipOption){
             case 1:
-                /*$user->isVip = 31;
-                $user->save();
-                return ('Você adicionou 31 dias de vip.');*/
-
                 $option['id'] = '1';
                 $option['description'] = '31 dias de vip.';
                 $option['amount'] = '24.99';
                 break;
             case 2:
-                /*$user->isVip = 184;
-                $user->save();
-                return ('Você adicionou 184 dias de vip.');*/
-
                 $option['id'] = '2';
                 $option['description'] = '184 dias de vip.';
                 $option['amount'] = '141.49';
                 break;
             case 3:
-                /*$user->isVip = 366;
-                $user->save();
-                return ('Você adicionou 366 dias de vip.');*/
-
                 $option['id'] = '3';
                 $option['description'] = '366 dias de vip.';
                 $option['amount'] = '259.99';
@@ -140,9 +128,9 @@ class UserController extends Controller
                       "Content-Type: application/xml; charset=ISO-8859-1"
             ],]);
 
-	    $xml = curl_exec($curl);
-	    $response = simplexml_load_string($xml);
-	    $err = curl_error($curl);
+            $xml = curl_exec($curl);
+            $response = simplexml_load_string($xml);
+            $err = curl_error($curl);
             curl_close($curl);
 
             $transaction = new Transaction;
@@ -159,14 +147,17 @@ class UserController extends Controller
                 9 - Retenção temporária
             */
 
-            if (Transaction::find($response->code) !== null){
-                $transacion = Transaction::find($response->code);
-                $transacion->status = $response->status;
+	        $transaction = Transaction::find($response->code);
+
+            if ($transaction && $transaction->exists){
+		
+		        $transaction->status = $response->status;
 
                 //Se o retorno for "aprovado" adiciona os dias de vip, caso seja "cancelado" ou "devolvido" remove os dias de vip.
+                $user = new User;
                 $user = User::find($response->sender->documents->document->value);
 
-                if ($response->status === '3'){
+                if ($response->status == 3){
 
                     switch ($response->items->item->id){
                         case 1:
@@ -184,9 +175,7 @@ class UserController extends Controller
                         }
                         
                     $user->save();
-                }else if (
-                    $response->status === '6' || $response->status === '7'
-                ){
+                }else if ($response->status == 6 || $response->status == 7){
                     switch ($response->items->item->id){
                         case 1:
                             $user->isVip = $user->isVip-31;
@@ -206,14 +195,18 @@ class UserController extends Controller
                 }
 
                 $transaction->save();
+
             } else {
+                
+                $transaction = new Transaction;
                 $transaction->id = $response->code;
                 $transaction->status = $response->status;
 
+                $user = new User;
+                $user = User::find($response->sender->documents->document->value);
+                
                 //Se o retorno for "aprovado" adiciona os dias de vip, caso seja "cancelado" ou "devolvido" remove os dias de vip.
-                if ($response->status === '3'){
-                    $user = User::find(Auth::user()->id);
-
+                if ($response->status == 3){
                     switch ($response->items->item->id){
                         case 1:
                             $user->isVip = $user->isVip+31;
@@ -228,32 +221,50 @@ class UserController extends Controller
                             exit();
                             break;
                     }
-                } else if (
-                    $response->status === '6' || $response->status === '7'
-                ){
+                } else if ($response->status == 6 || $response->status == 7) {
                     switch ($response->items->item->id){
                         case 1:
-                            $user->isVip = $user->isVip-31;
+                            if ($user->isVip >= 31){
+                                $user->isVip = $user->isVip-31;
+                            } else {
+                                $user->isVip = 0;
+                            }
+                            
                             break;
                         case 2:
-                            $user->isVip = $user->isVip-184;
+                            if ($user->isVip >= 184){
+                                $user->isVip = $user->isVip-184;
+                            } else {
+                                $user->isVip = 0;
+                            }
+
                             break;
                         case 3:
-                            $user->isVip = $user->isVip-366;
+                            if ($user->isVip >= 366){
+                                $user->isVip = $user->isVip-366;
+                            } else {
+                                $user->isVip = 0;
+                            }
+
                             break;
                         default:
                             exit();
                             break;
                     }
-                        
-                    $user->save();
                 }
-                
-		        $transaction->user_id = $response->sender->documents->document->value;
+
+	            $transaction->user_id = $response->sender->documents->document->value;
 		
-                $transaction->save();
+                if(!$user->save()){
+                    return response("Error while saving user new isVip field.", 500);
+                };
+
+                if(!$transaction->save()){
+                    return response("Error while saving transaction.", 500);
+                }
             }
         }
+
         return response(200);
     }
 

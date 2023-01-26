@@ -56,19 +56,19 @@
                         @csrf
                         <input type="hidden" name="to" value={{ $id }}>
                         <label id="star-5" class="star">
-                            <input type="radio" name="grade" onchange="this.form.submit()" value="5" />
+                            <input type="radio" name="grade" onchange="this.form.submit()" value="5" class="star-radio"/>
                         </label>
                         <label id="star-4" class="star">
-                            <input type="radio" name="grade" onchange="this.form.submit()" value="4" />
+                            <input type="radio" name="grade" onchange="this.form.submit()" value="4" class="star-radio"/>
                         </label>
                         <label id="star-3" class="star">
-                            <input type="radio" name="grade" onchange="this.form.submit()" value="3" />
+                            <input type="radio" name="grade" onchange="this.form.submit()" value="3" class="star-radio"/>
                         </label>
                         <label id="star-2" class="star">
-                            <input type="radio" name="grade" onchange="this.form.submit()" value="2" />
+                            <input type="radio" name="grade" onchange="this.form.submit()" value="2" class="star-radio"/>
                         </label>
                         <label id="star-1" class="star">
-                            <input type="radio" name="grade" onchange="this.form.submit()" value="1" />
+                            <input type="radio" name="grade" onchange="this.form.submit()" value="1" class="star-radio"/>
                         </label>
                     </form>
 

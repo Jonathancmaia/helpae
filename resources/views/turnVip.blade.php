@@ -1,49 +1,42 @@
 @extends('layouts.app')
 
 @section('content')
-<div>
-  <div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header">{{ __('Torne-se um vip!') }}</div>
-
-                <div class="card-body justify-content-center">
-                  <form
-                    action='{{ route('turnVip') }}'
-                    method="post"
-                  >
-                    @csrf
-                    <div class="container-fluid">
-                      <div class="row">
-                        <div class="col-12 justify-content-center d-flex mb-5">
-                          <h1>
-                            Escolha a melhor opção
-                          </h1>
-                        </div>
-                      </div>
-                      <div class="row">
-                        <div class="col-sm-4 d-flex justify-content-center">
-                          <div class="form-check form-check-inline">
-                            <div class='h-100 w-100 flex-column'>
-                              <label class="form-check-label" for="inlineRadio1">
-                                <center>
-                                  <h3>
-                                    Plano mensal
-                                  </h3>
-                                </center>
-                              </label>
-                              <small id="passwordHelp" class="form-text text-muted d-flex justify-content-center mb-2">
-                                Valor sem desconto.
-                              </small>
-                              <div class="w-100">
-                                <center>
-                                  <h4>
-                                    Por apenas
-                                    <br/>
-                                    R$24,99
-                                  </h4>
-                                </center>
+<div class="container-fluid w-background mt-5 p-5">
+  <form
+    action='{{ route('turnVip') }}'
+    method="post"
+  >
+    @csrf
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-12 justify-content-center d-flex mb-5">
+          <h1>
+            Escolha a melhor opção
+          </h1>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-4 d-flex justify-content-center">
+          <div class="form-check form-check-inline">
+            <div class='h-100 w-100 flex-column'>
+              <label class="form-check-label" for="inlineRadio1">
+                <center>
+                  <h3>
+                    Plano mensal
+                  </h3>
+                </center>
+              </label>
+              <small id="passwordHelp" class="form-text text-muted d-flex justify-content-center mb-2">
+                Valor sem desconto.
+              </small>
+              <div class="w-100">
+                <center>
+                  <h4>
+                    Por apenas
+                    <br/>
+                    R$24,99
+                  </h4>
+                </center>
                               </div>
                               <input class="form-check-input w-100" type="radio" name="vipOption" id="inlineRadio1" value="1" checked>
                             </div>
@@ -110,11 +103,6 @@
                       </button>
                     </div>
                   </form>
-                </div>
-              </div>
-          </div>
-      </div>
-    </div>
-  </div>
+                
 </div>
 @endsection

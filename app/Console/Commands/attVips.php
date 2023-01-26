@@ -41,7 +41,9 @@ class attVips extends Command
         $users = User::all();
 
         foreach($users as $user){
-            $user->isVip = $user->isVip--;
+            if ($user->isVip > 0){
+                $user->isVip = $user->isVip - 1;
+            }
             $user->save();
         }
     }

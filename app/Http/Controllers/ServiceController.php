@@ -22,7 +22,14 @@ class ServiceController extends Controller
 
     public function create()
     {
-        return view('create-service');
+        if (Auth::user()->cnpj === NULL){
+            return view('home', [
+                'error' => 'Você só pode anúnciar um serviço caso possua um cnpj. Você pode adicionar o seu cnpj no pianel.'
+            ]);
+            exit();
+        } else {
+            return view('create-service');
+        }
     }
 
     public function store(Request $request)

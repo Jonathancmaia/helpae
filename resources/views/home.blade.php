@@ -55,11 +55,14 @@
         <div class="row justify-content-center p-5">
             <div class='col-12 d-flex justify-content-center'>
                 <div class="btn-group btn-group-lg" role="group">
-                    <a type="button" class="btn start-announce-button btn-lg pl-5 pr-5
+                    <a type="button" class="btn start-announce-button btn-lg pl-5 pr-5" href="{{ route('create-location') }}">
+                        Alugue o seu produto
+                    </a>
+                    <a class="btn start-announce-button pl-5 pr-5
                         @if (Auth::user()->cnpj === NULL)
                             disabled
                         @endif"
-
+                        
                         @if (Auth::user()->cnpj === NULL)
                             href="#"
                             style="pointer-events: auto;"
@@ -68,12 +71,9 @@
                             data-delay='{"show":"0", "hide":"3000"}'
                             title="Você deve adicionar o seu cnpj para anunciar o seu produto para aluguel. Adicione no seu <a href={{route('panel')}}>painel</a>"
                         @else
-                            href="{{ route('create-location') }}"
+                            href="{{ route('create-service') }}"
                         @endif
                     >
-                        Alugue o seu produto
-                    </a>
-                    <a class="btn start-announce-button pl-5 pr-5" href="{{ route('create-service') }}">
                         Anuncie o seu serviço
                     </a>
                 </div>
