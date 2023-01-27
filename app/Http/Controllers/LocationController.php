@@ -71,7 +71,7 @@ class LocationController extends Controller
         //Verify if user isn't vip and have 3 or more announces
         $announces = DB::table('services')->where('user_id', $location->user_id)->count() + DB::table('locations')->where('user_id', $location->user_id)->count();
 
-        if (Auth::user()->isVip = 0 && $announces < 3 || Auth::user()->isVip > 0){
+        if (Auth::user()->isVip == 0 && $announces < 3 || Auth::user()->isVip > 0){
             if ($location->save()){
                 return redirect()->route('home', [
                     'success' => 'Seu serviço foi publicado com sucesso.'
