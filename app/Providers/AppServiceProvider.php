@@ -23,10 +23,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $locations = \App\Location::latest('id', 'user_id', 'desc', 'value', 'created_at')/*->paginate(8)*/->get();
+        $locations = \App\Location::latest('id', 'user_id', 'desc', 'value', 'created_at')->get();
         view()->share('locations', $locations);
 
-        $services = \App\Service::latest('id', 'user_id', 'desc', 'value', 'created_at')/*->paginate(8)*/->get();
+        $services = \App\Service::latest('id', 'user_id', 'desc', 'value', 'created_at')->get();
         view()->share('services', $services);
 
         $locationsNServices = array();

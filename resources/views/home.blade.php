@@ -88,10 +88,14 @@
             @foreach ($locationsNServices as $locationOrService)
                 @if (isset($_GET['search']) && $_GET['search'] !== '')
                     @if (mb_strpos(strtolower($locationOrService->desc), strtolower($_GET['search'])) !== false && $locationOrService->cidade == $_GET["cidade"])
-                        @include('layouts/servicesNLocationsCard')
+                        @if (!$locationOrService->suspended)
+                            @include('layouts/servicesNLocationsCard')
+                        @endif
                     @endif
                 @else
-                    @include('layouts/servicesNLocationsCard')
+                    @if (!$locationOrService->suspended)
+                        @include('layouts/servicesNLocationsCard')
+                    @endif
                 @endif
             @endforeach
         </div>

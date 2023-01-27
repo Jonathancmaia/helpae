@@ -19,6 +19,7 @@ class CreateServicesTable extends Migration
             $table->string('desc');
             $table->string('value');
             $table->integer('cidade');
+            $table->boolean('suspended')->default(false);
             $table->timestamps();
         });
     }

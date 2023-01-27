@@ -23,8 +23,12 @@ Auth::routes();
 Auth::routes(['verify' => true]);
 
 //Creating Routes
-Route::get('/create-service', 'ServiceController@create')->middleware('auth', 'verified', 'verified')->name('create-service');
-Route::get('/create-location', 'LocationController@create')->middleware('auth', 'verified', 'verified')->name('create-location');
+Route::get('/create-service', 'ServiceController@create')->middleware('auth', 'verified')->name('create-service');
+Route::get('/create-location', 'LocationController@create')->middleware('auth', 'verified')->name('create-location');
+
+//Suspending Routes
+Route::post('/suspend-service', 'ServiceController@suspend')->middleware('auth', 'verified')->name('suspend-service');
+Route::post('/suspend-location', 'ServiceController@suspend')->middleware('auth', 'verified')->name('suspend-location');
 
 //Storing Routes
 Route::post('/store-service', 'ServiceController@store')->middleware('auth', 'verified')->name('store-service');

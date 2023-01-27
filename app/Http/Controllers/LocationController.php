@@ -10,6 +10,7 @@ use App\Location_pic;
 
 use Intervention\Image\ImageManagerStatic as Image;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
 
 class LocationController extends Controller
 {
@@ -27,7 +28,6 @@ class LocationController extends Controller
     public function store(Request $request)
     {
         $location = new Location;
-
         $location->user_id = Auth::user()->id;
             
         //Verify if desc input is valid
@@ -68,14 +68,24 @@ class LocationController extends Controller
             exit();
         }
 
-        if ($location->save()){
-            return redirect()->route('home', [
-                'success' => 'Seu serviço foi publicado com sucesso.'
-            ]);
-            exit();
+        //Verify if user isn't vip and have 3 or more announces
+        $announces = DB::table('services')->where('user_id', $location->user_id)->count() + DB::table('locations')->where('user_id', $location->user_id)->count();
+
+        if (Auth::user()->isVip = 0 && $announces < 3 || Auth::user()->isVip > 0){
+            if ($location->save()){
+                return redirect()->route('home', [
+                    'success' => 'Seu serviço foi publicado com sucesso.'
+                ]);
+                exit();
+            } else {
+                return view('create-location', [
+                    'error' => 'Houve um erro no salvamento da locação. por favor, entre com contato com o suporte.'
+                ]);
+                exit();
+            }
         } else {
             return view('create-location', [
-                'error' => 'Houve um erro no salvamento da locação. por favor, entre cm contato com o suporte.'
+                'error' => 'Usuários sem acesso vip não podem criar mais que 3 anúncios.'
             ]);
             exit();
         }
@@ -129,11 +139,13 @@ class LocationController extends Controller
         
     }
 
-    public function add_pic(Request $request){
+    public function add_pic(Request $request)
+    {
         return view('edit-location', ['message'=>$params['id']]);
     }
 
-    public function store_pic(Request $request){
+    public function store_pic(Request $request)
+    {
 
         if($request->hasFile('pic') && $request->file('pic')->isValid()){
             $location = new Location;
@@ -182,13 +194,15 @@ class LocationController extends Controller
         }
     }
 
-    public function show_pic($id){
+    public function show_pic($id)
+    {
         $location_pic = new Location_pic;
 
         return $location_pic::find($id);
     }
 
-    public function delete_pic(Request $request){
+    public function delete_pic(Request $request)
+    {
 
         $location = new Location;
         $location_pic = new Location_pic;
@@ -220,5 +234,30 @@ class LocationController extends Controller
             ]);
         }
 
+    }
+
+    public function suspend(Request $request)
+    {
+        $location = new Location;
+        $location = $location::find($request->id);
+
+        
+        if ($location->suspended){
+            $location->suspended = false;
+        } else {
+            $location->suspended = true;
+        }
+
+        if ($location->save()){
+            return redirect()->route('show-location', [
+                $location,
+                "success"=>"Estado da suspenção alterado."
+            ]);
+        } else {
+            return redirect()->route('show-location', [
+                $location,
+                "error"=>"Ocorreu um erro ao alterar o estado da suspenção."
+            ]);
+        }
     }
 }

@@ -138,11 +138,13 @@ class ServiceController extends Controller
         
     }
 
-    public function add_pic(Request $request){
+    public function add_pic(Request $request)
+    {
         return view('edit-service');
     }
 
-    public function store_pic(Request $request){
+    public function store_pic(Request $request)
+    {
         if($request->hasFile('pic') && $request->file('pic')->isValid()){
             $service = new Service;
             $service_pic = new Service_pic;
@@ -190,7 +192,8 @@ class ServiceController extends Controller
         }
     }
 
-    public function delete_pic(Request $request){
+    public function delete_pic(Request $request)
+    {
 
         $service = new Service;
         $service_pic = new Service_pic;
@@ -222,5 +225,30 @@ class ServiceController extends Controller
             ]);
         }
 
+    }
+
+    public function suspend(Request $request)
+    {
+        $service = new Service;
+        $service = $service::find($request->id);
+
+        
+        if ($service->suspended){
+            $service->suspended = false;
+        } else {
+            $service->suspended = true;
+        }
+
+        if ($service->save()){
+            return redirect()->route('show-service', [
+                $service,
+                "success"=>"Estado da suspenção alterado."
+            ]);
+        } else {
+            return redirect()->route('show-service', [
+                $service,
+                "error"=>"Ocorreu um erro ao alterar o estado da suspenção."
+            ]);
+        }
     }
 }

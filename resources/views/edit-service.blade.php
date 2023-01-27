@@ -2,10 +2,10 @@
 
 @section('content')
     <?php
-    use App\Service;
-    use App\Service_pic;
-    $service = new Service();
-    $service_pic = new Service_pic();
+        use App\Service;
+        use App\Service_pic;
+        $service = new Service();
+        $service_pic = new Service_pic();
     ?>
     <script>
         let existsMidia = false;
@@ -58,6 +58,16 @@
                         </div>
                         <button type="submit" class="btn panel-button btn-lg btn-block">
                             Enviar mídia
+                        </button>
+                    </form>
+                    <hr/>
+                    <form method="post" action="{{ route('suspend-service') }}">
+                        @csrf
+                        <h2>Suspender publicação</h2>
+                        <label>Ao suspender a sua publicação, a mesma não estará mais visível. A suspensão pode ser cancelada a qualquer momento.</label>
+                        <input type="hidden" value={{Request::segment(2)}} name="id"/>
+                        <button type="submit" class="btn btn-warning btn-lg btn-block">
+                            Suspender
                         </button>
                     </form>
                     <hr/>
