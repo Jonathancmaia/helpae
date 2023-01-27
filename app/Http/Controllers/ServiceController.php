@@ -11,6 +11,7 @@ use App\Service_pic;
 
 use Intervention\Image\ImageManagerStatic as Image;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
 
 class ServiceController extends Controller
 {
@@ -76,14 +77,26 @@ class ServiceController extends Controller
             exit();
         }
 
-        if ($service->save()){
-            return redirect()->route('home', [
-                'success' => 'Seu serviço foi publicado com sucesso.'
-            ]);
-            exit();
+        
+
+        //Verify if user isn't vip and have 3 or more announces
+        $announces = DB::table('services')->where('user_id', $service->user_id)->count() + DB::table('locations')->where('user_id', $service->user_id)->count();
+
+        if (Auth::user()->isVip = 0 && $announces < 3 || Auth::user()->isVip > 0){
+            if ($service->save()){
+                return redirect()->route('home', [
+                    'success' => 'Seu serviço foi publicado com sucesso.'
+                ]);
+                exit();
+            } else {
+                return view('create-service', [
+                    'error' => 'Houve um erro no salvamento do serviço. por favor, entre cm contato com o suporte.'
+                ]);
+                exit();
+            }
         } else {
             return view('create-service', [
-                'error' => 'Houve um erro no salvamento do serviço. por favor, entre cm contato com o suporte.'
+                'error' => 'Usuários sem acesso vip não podem criar mais que 3 anúncios.'
             ]);
             exit();
         }
@@ -102,7 +115,6 @@ class ServiceController extends Controller
             }
         }
     }
-
 
     public function delete(Request $request)
     {
