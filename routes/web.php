@@ -28,7 +28,7 @@ Route::get('/create-location', 'LocationController@create')->middleware('auth', 
 
 //Suspending Routes
 Route::post('/suspend-service', 'ServiceController@suspend')->middleware('auth', 'verified')->name('suspend-service');
-Route::post('/suspend-location', 'ServiceController@suspend')->middleware('auth', 'verified')->name('suspend-location');
+Route::post('/suspend-location', 'LocationController@suspend')->middleware('auth', 'verified')->name('suspend-location');
 
 //Storing Routes
 Route::post('/store-service', 'ServiceController@store')->middleware('auth', 'verified')->name('store-service');

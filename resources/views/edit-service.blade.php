@@ -6,6 +6,8 @@
         use App\Service_pic;
         $service = new Service();
         $service_pic = new Service_pic();
+
+        $isSuspended = $service::find(Request::segment(2))->suspended;
     ?>
     <script>
         let existsMidia = false;
@@ -63,11 +65,27 @@
                     <hr/>
                     <form method="post" action="{{ route('suspend-service') }}">
                         @csrf
-                        <h2>Suspender publicação</h2>
+                        <h2>
+                            @if ($isSuspended)
+                                Remover suspenção da publicação
+                            @else
+                                Suspender publicação
+                            @endif
+                        </h2>
                         <label>Ao suspender a sua publicação, a mesma não estará mais visível. A suspensão pode ser cancelada a qualquer momento.</label>
                         <input type="hidden" value={{Request::segment(2)}} name="id"/>
-                        <button type="submit" class="btn btn-warning btn-lg btn-block">
-                            Suspender
+                        <button type="submit" class="btn
+                            @if($isSuspended)
+                                btn-success
+                            @else
+                                btn-warning
+                            @endif
+                        btn-lg btn-block">
+                            @if ($isSuspended)
+                                Remover
+                            @else
+                                Suspender
+                            @endif
                         </button>
                     </form>
                     <hr/>

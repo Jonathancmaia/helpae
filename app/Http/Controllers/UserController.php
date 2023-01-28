@@ -12,6 +12,10 @@ use App\Rate;
 use App\Comment;
 use File;
 
+use DB;
+use App\Location;
+use App\Service;
+
 use Intervention\Image\ImageManagerStatic as Image;
 use Illuminate\Support\Facades\Storage;
 
@@ -111,7 +115,8 @@ class UserController extends Controller
         }
     }
 
-    public function paymentReturn(Request $request){
+    public function paymentReturn(Request $request)
+    {
 
         if($request->notificationType === 'transaction'){
             $curl = curl_init();
@@ -268,7 +273,8 @@ class UserController extends Controller
         return response(200);
     }
 
-    public function changeName(Request $request){
+    public function changeName(Request $request)
+    {
         $user = User::find(Auth::user()->id);
 
         //Valid and save field
@@ -319,7 +325,8 @@ class UserController extends Controller
         }
     }
 
-    public function changeEmail(Request $request){
+    public function changeEmail(Request $request)
+    {
         $user = User::find(Auth::user()->id);
 
         //Valid and save field
@@ -374,7 +381,8 @@ class UserController extends Controller
         }
     }
 
-    public function changePassword(Request $request){
+    public function changePassword(Request $request)
+    {
         $user = User::find(Auth::user()->id);
 
         if(!Auth::attempt(['email' => $user->email, 'password' => $request->password])){
@@ -424,7 +432,8 @@ class UserController extends Controller
         }
     }
 
-    public function changeCnpj(Request $request){
+    public function changeCnpj(Request $request)
+    {
 
         $user = User::find(Auth::user()->id);
 
@@ -467,12 +476,14 @@ class UserController extends Controller
         }
     }
 
-    public function getData(Request $request){
+    public function getData(Request $request)
+    {
         $user = new User;
         return $user::where('id', $request->id)->first(['name', 'email']);
     }
 
-    public function show($id){
+    public function show($id)
+    {
         $user = new User;
         $user = User::find($id);
 
@@ -486,7 +497,8 @@ class UserController extends Controller
         ]);
     }
 
-    public function rate(Request $request){
+    public function rate(Request $request)
+    {
 
         //A user cannot rate yourself
         if ($request->to != Auth::user()->id){
@@ -537,7 +549,8 @@ class UserController extends Controller
         }
     }
 
-    public function comment(Request $request){
+    public function comment(Request $request)
+    {
 
         $comment = new Comment;
         $user = new User;
@@ -588,14 +601,16 @@ class UserController extends Controller
         }
     }
 
-    public function deleteComment(Request $request){
+    public function deleteComment(Request $request)
+    {
         return redirect()->route('show-user', [
             'id'=>$request->to,
             'success'=> 'Comentário apagado com sucesso.'
         ]);
     }
 
-    public function addPic(Request $request){
+    public function addPic(Request $request)
+    {
 
         if($request->hasFile('pic') && $request->file('pic')->isValid()){
 
@@ -684,5 +699,6 @@ class UserController extends Controller
                 'error' => "Faça o upload se um arquivo de imagem."
             ]);
         }
-        }
     }
+}
+

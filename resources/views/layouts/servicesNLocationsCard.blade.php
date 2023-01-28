@@ -26,6 +26,9 @@
             </h5>
             <p class="card-text">{{ $locationOrService->desc }}</p>
             <p class="card-text">R$ {{ $locationOrService->value }}</p>
+            @if($locationOrService->suspended)
+                <span class="text-danger suspeded-text">Anúncio suspendido.</span>
+            @endif
         </div>
         <div>
             @if ((int) $locationOrService->user_id === (int) Auth::user()->id)

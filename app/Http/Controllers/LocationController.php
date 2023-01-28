@@ -243,7 +243,17 @@ class LocationController extends Controller
 
         
         if ($location->suspended){
-            $location->suspended = false;
+
+            $announces = DB::table('services')->where('user_id', $location->user_id)->where('suspended', false)->count() + DB::table('locations')->where('user_id', $location->user_id)->where('suspended', false)->count();
+
+            if (Auth::user()->isVip == 0 && $announces < 3 || Auth::user()->isVip > 0){
+                $location->suspended = false;
+            } else {
+                return redirect()->route('show-location', [
+                    $location,
+                    "error"=>"Usuários grátis não podem ter mais que 3 anúncios ativos."
+                ]);
+            }
         } else {
             $location->suspended = true;
         }
