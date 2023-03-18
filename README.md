@@ -22,8 +22,8 @@ Helpaê is a website built with Laravel that connects people who want to rent to
 1. Access the website through your browser (https://helpae.com)
 2. Sign up for a new account or log in to an existing account
 3. Browse the available tools and services, and view their details
-5. As a provider, list your tools and services and view booking requests and transaction history
-6. As an administrator, manage user accounts, tool and service listings, and booking requests
+4. Connect with the provider or claiment by the chat
+5. As a provider, list your tools and services and view user requests
 
 ## Contribution
 
