@@ -31,11 +31,3 @@ Helpaê is a website built with Laravel that connects people who want to rent to
 3. Browse the available tools and services, and view their details
 4. Connect with the provider or claiment by the chat
 5. As a provider, list your tools and services and view user requests
-
-## Contribution
-
-This project is open for contributions. If you encounter any issues or have suggestions for improvements, feel free to create an issue or send a pull request.
-
-## License
-
-This project is licensed under the MIT License. See the LICENSE file for more information.
