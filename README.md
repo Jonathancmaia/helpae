@@ -17,6 +17,13 @@ Helpaê is a website built with Laravel that connects people who want to rent to
 - MySQL
 - JavaScript
 
+## Install in dev enviroment
+
+- Clone this repository
+- Run "composer install" & "npm i" to install all dependencies
+- Run "php artisan websockets:serve" to turn on websockets
+- Run "php artisan schedule:work" to turn on laravel scheduling in dev enviroment
+
 ## How to Use
 
 1. Access the website through your browser (https://helpae.com)
