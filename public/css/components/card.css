@@ -4,3 +4,21 @@
   padding: 1rem 0rem 1rem 0rem;
   max-width: 35vw;
 }
+
+.vipTag{
+  position: absolute;
+  z-index: 99;
+  left: 1.5rem;
+  top: 1.5rem;
+  background-color: #9B111E;
+  color: #FFFFFF;
+  font-weight: 900;
+  padding: 0.25rem;
+  border-radius: 0.25rem;
+}
+
+@media (max-width: 767px){
+  .vipTag{
+    left: 35%;
+  }
+}

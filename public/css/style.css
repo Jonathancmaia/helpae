@@ -69,3 +69,17 @@ input[type=number] {
   max-height: 300px;
   max-width: 300px;
 }
+
+.welcome-logo{
+  width: 48vw;
+  margin: 10vh 25vw 10vh 25vw;
+}
+
+.nav-logo{
+  width: 12rem;
+}
+
+.white-background{
+  background-color: #FFFFFF;
+  margin: 10vh 0vw 10vh 0vw;
+}

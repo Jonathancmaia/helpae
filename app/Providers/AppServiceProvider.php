@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use App\User;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -23,6 +24,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        $user = new User;
+
         $locations = \App\Location::latest('id', 'user_id', 'desc', 'value', 'created_at')->get();
         view()->share('locations', $locations);
 
@@ -37,6 +40,9 @@ class AppServiceProvider extends ServiceProvider
 
             //Recuperação de fotos da locação
             $location->pics = \App\Location_pic::where('location_id', $location->id)->get();
+
+            //Verifica se é vip
+            $location->isVip = $isVip = $user::where(['id' => $location->user_id])->pluck('isVip')->first() !== 0 ? true : false;
             
             array_push($locationsNServices, $location);
             
@@ -48,6 +54,9 @@ class AppServiceProvider extends ServiceProvider
             //Recuperação de fotos do serviço
             $service->pics = \App\Service_pic::where('service_id', $service->id)->get();
 
+            //Verifica se é vip
+            $service->isVip = $isVip = $user::where(['id' => $service->user_id])->pluck('isVip')->first() !== 0 ? true : false;
+
             array_push($locationsNServices, $service);
         }
 
@@ -56,7 +65,7 @@ class AppServiceProvider extends ServiceProvider
                 if ($a->created_at == $b->created_at) {
                     return 0;
                 }
-                return ($a->created_at < $b->created_at) ? -1 : 1;
+                return ($a->created_at < $b->created_at && $a->isVip) ? -1 : 1;
             }
         );
 

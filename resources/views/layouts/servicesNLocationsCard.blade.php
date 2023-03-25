@@ -1,4 +1,7 @@
 <div class="col-md-3 d-flex justify-content-center">
+    @if ($locationOrService->isVip)
+        <span class="vipTag">VIP</span>
+    @endif
     <div class="card">
         @if (sizeof($locationOrService->pics) != 0)
             <div id={{ 'carousel' . $locationOrService->id . $locationOrService->type }} class="carousel slide"

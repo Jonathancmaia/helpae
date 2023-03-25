@@ -97,21 +97,7 @@
         <link href="{{ asset('css/style.css') }}" rel="stylesheet"/>
     </head>
     <body>
-        <div class="flex-center position-ref full-height">
-            <div class="area" >
-                <ul class="circles">
-                    <li></li>
-                    <li></li>
-                    <li></li>
-                    <li></li>
-                    <li></li>
-                    <li></li>
-                    <li></li>
-                    <li></li>
-                    <li></li>
-                    <li></li>
-                </ul>
-            </div>
+        <div class="flex-center position-ref full-height blue-background">
             <div class="context">
 
                 <!-- Navbar -->
@@ -130,9 +116,9 @@
                 @endif
                 
                 <!-- Title -->
-                <h1>
-                    Helpaê
-                </h1>
+                <div class="white-background">
+                    <img src="{{ asset('images/logo.png') }}" class="welcome-logo">
+                </div>
 
                 <!-- 1st section -->
                 <section>

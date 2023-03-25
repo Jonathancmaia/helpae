@@ -33,27 +33,13 @@
 <body>
     <div id="app">
         <main>
-            <div class="flex-center position-ref full-height">
-                <div class="area">
-                    <ul class="circles">
-                        <li></li>
-                        <li></li>
-                        <li></li>
-                        <li></li>
-                        <li></li>
-                        <li></li>
-                        <li></li>
-                        <li></li>
-                        <li></li>
-                        <li></li>
-                    </ul>
-                </div>
+            <div class="flex-center position-ref full-height blue-background">
 
                 <div class="context">
                     <nav class="navbar navbar-expand-md navbar-light bg-white">
                         <div class="container">
                             <a class="navbar-brand" href="{{ url('/') }}">
-                                {{ config('app.name', 'Helpaê') }}
+                            <img src="{{ asset('images/logo.png') }}" class="nav-logo">
                             </a>
                             <button class="navbar-toggler" type="button" data-toggle="collapse"
                                 data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
