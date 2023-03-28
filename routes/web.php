@@ -17,8 +17,6 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Auth::routes();
-
 //E-mail verification route
 Auth::routes(['verify' => true]);
 

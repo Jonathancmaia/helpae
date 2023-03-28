@@ -25,7 +25,7 @@ class ServiceController extends Controller
     {
         if (Auth::user()->cnpj === NULL){
             return view('home', [
-                'error' => 'Você só pode anúnciar um serviço caso possua um cnpj. Você pode adicionar o seu cnpj no pianel.'
+                'error' => 'Você só pode anúnciar um serviço caso possua um cnpj. Você pode adicionar o seu cnpj no painel.'
             ]);
             exit();
         } else {
