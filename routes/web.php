@@ -59,8 +59,8 @@ Route::post('/delete-location', 'LocationController@delete')->middleware('auth',
 
 //Message routes
 Route::post('/store_message', 'MessageController@store')->middleware('auth', 'verified')->name('store-message');
-Route::get('/messages', 'MessageController@index')->name('messages');
-Route::post('/show-messages', 'MessageController@show')->name('show-messages');
+Route::get('/messages', 'MessageController@index')->middleware('auth', 'verified')->name('messages');
+Route::post('/show-messages', 'MessageController@show')->middleware('auth', 'verified')->name('show-messages');
 
 //Showing Routes
 Route::get('/show-location/{id}', 'LocationController@show')->name('show-location');
@@ -75,7 +75,7 @@ Route::get('/show-user/{id}', 'UserController@show')->name('show-user');
 Route::post('/show-cities', 'CidadeController@show')->name('show-cities');
 
 //rate user route
-Route::post('/rate-user', 'UserController@rate')->name('rate-user');
+Route::post('/rate-user', 'UserController@rate')->middleware('auth', 'verified')->name('rate-user');
 
 //comment user profile route
 Route::post('/post-comment', 'UserController@comment')->name('post-comment');
@@ -93,8 +93,8 @@ Route::get('/turnVipForm', function(){
     return view('turnVip');
 })->name('turnVipForm');
 
-Route::post('/turnVip', 'UserController@turnVip')->middleware('auth', 'verified')->name('turnVip');;
+Route::post('/turnVip', 'UserController@turnVip')->middleware('auth', 'verified')->name('turnVip');
 
-Auth::routes();
+Route::get('/terms', function(){ return view('terms'); })->name('terms');
 
 Route::get('/home', 'HomeController@index')->name('home');
