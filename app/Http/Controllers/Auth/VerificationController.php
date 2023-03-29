@@ -26,7 +26,7 @@ class VerificationController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/home';
+    protected $redirectTo = '/home?success="Email verificado com sucesso."';
 
     /**
      * Create a new controller instance.
