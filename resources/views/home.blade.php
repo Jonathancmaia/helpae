@@ -13,6 +13,15 @@
             </div>
         @endif
 
+        @if (Auth::user()->email_verified_at === NULL)
+            <div class="alert alert-warning" role="alert">
+                O seu e-mail ainda não foi verificado. Para utilizar todos os recursos da HelpAê, <a href="{{ url('email/verify') }}">verifiquei o seu e-mail</a>.
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        @endif
+
         <!-- Search row -->
         <div class="row justify-content-center p-5 mt-5 w-background">
             <form class="input-group input-group-lg search_line" action="{{ route('home') }}" method="get">
