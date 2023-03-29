@@ -29,7 +29,7 @@ class RegisterController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/login?success="Usuário cadastrado com sucesso."';
+    protected $redirectTo = '/login?success=Usuário cadastrado com sucesso.';
 
     /**
      * Create a new controller instance.
